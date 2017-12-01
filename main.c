@@ -10,7 +10,7 @@ char Book_Title[100];
 char Author[50];
 char publisher[50];
 char ISBN[18]; // International Standard Book Number ..Example: 978-3-16-148410-0
-Date DateOfPuplication[11]; // Example 30/11/2017
+Date DateOfPuplication; // Example 30/11/2017
 int number_of_copies ;
 int current_available_number_of_copies;
 char category[30];
@@ -38,16 +38,24 @@ typedef struct{
     Date date_due_to_return;
     Date date_returned;
 
-
 }Borrow;
+
+book *books;
+member *members;
+borrow *borrows;
+
 
  FILE* Write_book( );
 void read_files_file();
 void read_members_file();
 void read_borrows_file();
+
 int main()
 {
-  FILE *BOOk_file_ptr;
+books=(book*)malloc(100*sizeof(book));
+members=(member*)malloc(100*sizeof(member));
+borrows=(borrow*)malloc(100*sizeof(member));
+    FILE *BOOk_file_ptr;
 BOOk_file_ptr=Write_book();
     return 0;
 }
@@ -102,12 +110,6 @@ i++;
 } fclose(bookPtr);
 }
 
-book *books;
-books=(book*)malloc(100*sizeof(book));
-member *members;
-members=(member*)malloc(100*sizeof(member));
-borrow *borrows;
-borrows=(borrow*)malloc(100*sizeof(member));
 
 int read_books_file (){
     FILE* f;
