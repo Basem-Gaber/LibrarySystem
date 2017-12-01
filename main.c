@@ -106,7 +106,7 @@ members=(member*)malloc(100*sizeof(member));
 borrow *borrows;
 borrows=(borrow*)malloc(100*sizeof(member));
 
-void read_books_file (){
+int read_books_file (){
     FILE* f;
     int i=0;
     f=fopen("books.txt","r");
@@ -123,9 +123,10 @@ void read_books_file (){
         i++;
     }
     fclose(f);
+ return i+1;
 }
 
-void read_members_file(){
+int read_members_file(){
     FILE* f;
     int i=0;
     f=fopen("members.txt","r");
@@ -142,9 +143,10 @@ void read_members_file(){
         i++;
     }
     fclose(f);
+ return i+1;
 }
 
-void read_borrows_file(){
+int read_borrows_file(){
     FILE* f;
     int i=0;
     f=fopen("borrows.txt","r");
@@ -162,5 +164,6 @@ void read_borrows_file(){
         i++;
     }
     fclose(f);
+ return i+1;
 }
 
