@@ -2,7 +2,7 @@
 #include <stdlib.h>
 typedef struct {
 char Book_Title[100];
-char Auther[50];
+char Author[50];
 char publisher[50];
 char ISBN[18]; // International Standard Book Number ..Example: 978-3-16-148410-0
 char DateOfPuplication[11]; // Example 30/11/2017
@@ -17,7 +17,7 @@ book bookInfo;
      char city[20];
  }address;
 typedef struct{
-char member_1st_name[50];
+char member_first_name[50];
 char member_last_name[50];
 char member_ID[9];
 address member_address;
@@ -39,6 +39,9 @@ typedef struct{
 }Borrow;
 
  FILE* Write_book( );
+void read_files_file();
+void read_members_file();
+void read_borrows_file();
 int main()
 {
   FILE *BOOk_file_ptr;
@@ -95,3 +98,69 @@ i++;
 
 } fclose(bookPtr);
 }
+
+book *books;
+books=(book*)malloc(50*sizeof(book));
+member *members;
+members=(member*)malloc(50*sizeof(member));
+borrow *borrows;
+borrows=(borrow*)malloc(50*sizeof(member));
+
+void read_books_file (){
+    FILE* f;
+    int i=0;
+    f=fopen("books.txt","r");
+    if(f==NULL)
+    {
+        printf("Books text file doesn't exist!\n");
+        exit(11);
+    }
+    while(!feof(f))
+    {
+        books[i]=fscanf(f,"%[^,]%[^,]%[^,]%[^,]%[^,]%d%d%[^,]",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
+                        ,books[i].DateOfPuplication,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category);
+        fscanf(f,"\n");
+        i++;
+    }
+    fclose(f);
+}
+
+void read_members_file(){
+    FILE* f;
+    int i=0;
+    f=fopen("members.txt","r");
+    if(f==NULL)
+    {
+        printf("Members text file doesn't exist!\n");
+        exit(21);
+    }
+    while(!feof(f))
+    {
+        members[i]=fscanf(f,"%[^,]%[^,]%[^,]%[^,]%[^,]%[^,]",members[i].member_last_name,members[i].member_first_name,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
+                          ,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email);
+        fscanf(f,"\n");
+        i++;
+    }
+    fclose(f);
+}
+
+void read_borrows_file(){
+    FILE* f;
+    int i=0;
+    f=fopen("borrows.txt","r");
+    if(f==NULL)
+    {
+        printf("Borrows file doesn't exist!\n");
+        exit(31);
+    }
+    while(!feof(f))
+    {
+        borrows[i]=(f,"%[^,]%[^,]%[^,]%[^,]%[^,]",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+                    ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month
+                    ,borrows[i].date_due_to_return.year,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
+        fscanf(f"\n");
+        i++;
+    }
+    fclose(f);
+}
+
