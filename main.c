@@ -120,8 +120,8 @@ int read_books_file (){
     }
     while(!feof(f))
     {
-        books[i]=fscanf(f,"%[^,]%[^,]%[^,]%[^,]%[^,]%d%d%[^,]",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
-                        ,books[i].DateOfPuplication,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category);
+        books[i]=fscanf(f,"%[^,]%[^,]%[^,]%[^,]%d%d%d%d%d%[^,]",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
+                        ,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category);
         fscanf(f,"\n");
         i++;
     }
@@ -160,7 +160,7 @@ int read_borrows_file(){
     }
     while(!feof(f))
     {
-        borrows[i]=(f,"%[^,]%[^,]%[^,]%[^,]%[^,]",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+        borrows[i]=(f,"%[^,]%[^,]%d%d%d%d%d%d%d%d%d",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
                     ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month
                     ,borrows[i].date_due_to_return.year,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
         fscanf(f"\n");
