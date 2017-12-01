@@ -100,11 +100,11 @@ i++;
 }
 
 book *books;
-books=(book*)malloc(50*sizeof(book));
+books=(book*)malloc(100*sizeof(book));
 member *members;
-members=(member*)malloc(50*sizeof(member));
+members=(member*)malloc(100*sizeof(member));
 borrow *borrows;
-borrows=(borrow*)malloc(50*sizeof(member));
+borrows=(borrow*)malloc(100*sizeof(member));
 
 void read_books_file (){
     FILE* f;
