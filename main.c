@@ -5,6 +5,12 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#ifdef __unix__
+# include <unistd.h>
+#elif defined _WIN32
+# include <windows.h>
+#define sleep(x) Sleep(1000 * x)
+#endif
 
 typedef struct {
     int day, month, year;
@@ -147,23 +153,23 @@ int date_compare(Date d1,Date d2){
     }
 }
 
-
+void acquire_date_current(){
+    time_t date_current1=time(NULL);
+    struct tm tm=*localtime(&date_current1);
+    date_current.day=tm.tm_mday;
+    date_current.month=tm.tm_mon+1;
+    date_current.year=tm.tm_year+1900;
+}
 void overdue_books(){
 int i=0,x,y,overcount=0;
-time_t date_current1=time(NULL);
-struct tm tm=*localtime(&date_current1);
-date_current.day=tm.tm_mday;
-date_current.month=tm.tm_mon;
-date_current.year=tm.tm_year;
-printf("\n\n%d-%d-%d\n\n",date_current.day,date_current.month,date_current.year);
+acquire_date_current();
 
 for(i=0;i<borrowarraysize;i++)
 {
     x=date_compare(borrows[i].date_due_to_return,date_current);
     y=date_compare(borrows[i].date_due_to_return,borrows[i].date_returned);
-    printf("\n\n%d-%d-%d\n\n",date_current.day,date_current.month,date_current.year);
 
-    if(x==1&&y!=2)
+    if(x==2&&y!=2)
     {
         overdue[overcount]=borrows[i];
         overcount++;
@@ -175,6 +181,7 @@ display_overdue(overcount);
 
 void display_overdue(int n){
     int i;
+    printf("List of Overdue books: \n");
     for(i=0;i<n;i++)
     {
     printf("%d)%s,%s,%d-%d-%d,%d/%d/%d,%d/%d/%d\n",i+1,overdue[i].borrowed_ISBN,overdue[i].user_i,overdue[i].date_borrowed.day,overdue[i].date_borrowed.month
@@ -182,11 +189,13 @@ void display_overdue(int n){
                     ,overdue[i].date_due_to_return.year,overdue[i].date_returned.day,overdue[i].date_returned.month,overdue[i].date_returned.year);
 
 }
+wait_for_it(4);
 }
 
 book*popular;
+
 void most_popular_books(){
-    int i,max=0,popularcount=0;
+    int i,j,max=0,popularcount=0;
     popular=(book*)malloc(5*sizeof(book));
     for(i=0;i<bookarraysize;i++)
     {
@@ -207,7 +216,14 @@ void most_popular_books(){
         }
         max--;
     }
-
+printf("Most Popular 5 books: \n");
+for(j=0;j<popularcount;j++)
+{
+    printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",popular[j].Book_Title,popular[j].Author,popular[j].publisher,popular[j].ISBN,
+           popular[j].DateOfPuplication.day,popular[j].DateOfPuplication.month,popular[j].DateOfPuplication.year,popular[j].number_of_copies,
+           popular[j].current_available_number_of_copies,popular[j].category,popular[j].borrows);
+}
+wait_for_it(4);
 }
 
 
@@ -244,6 +260,7 @@ case 4:
     strcpy(newdata,books[bookindex].publisher);
     break;
     }
+    wait_for_it(1);
 }
 
 int check_ISBN_in_books(char ISBN[])
@@ -318,12 +335,14 @@ void return_book(){
     printf("Please enter the ISBN of the returned book: \n");
     scanf("%s",ISBN);
     x=check_ISBN_in_borrows(ISBN);
+    acquire_date_current();
     borrows[x].date_returned=date_current;
     y=check_ISBN_in_books(ISBN);
     books[y].current_available_number_of_copies++;
     z=check_ID(ID);
     members[z].borrows--;
     printf("Book returned!");
+    wait_for_it(3);
 
 
 }
@@ -342,8 +361,6 @@ void display_found(int n){
                ,found[i].DateOfPuplication.day,found[i].DateOfPuplication.month,found[i].DateOfPuplication.year
                ,found[i].number_of_copies,found[i].current_available_number_of_copies,found[i].category);
     }
-
-
 }
 
 void book_struct_copy(int x,int y){
@@ -366,7 +383,7 @@ void capitalization(char*string,int n){
     string[0]=c;
     for(i=1;i<n;i++)
     {
-        if(string[i]==' '&&string[i+1]!='t')
+        if(string[i]==' '&&!(string[i+1]=='t' && string[i+2]=='o'))
         {
             c=toupper(string[i+1]);
             string[i+1]=c;
@@ -433,7 +450,6 @@ int search_by_title(){
     if(foundcount==0)
     {
         printf("Book Title wasn't found!\n");
-        scanf("%c",&c);
     }
     //if(c=='Y'||'y')
         //search_for_a_book();
@@ -469,7 +485,6 @@ int search_by_author(){
     if(foundcount==0)
     {
         printf("Author wasn't found!\n");
-        scanf("%c",&c);
     }
     //if(c=='Y'||'y')
         //search_for_a_book();
@@ -503,7 +518,6 @@ int search_by_ISBN(){
     if(foundcount==0)
     {
         printf("ISBN wasn't found!\n");
-        scanf("%c",&c);
     }
     //if(c=='Y'||'y')
         //search_for_a_book();
@@ -548,7 +562,7 @@ int search_by_category(){
         return foundcount;
 }
 
-void search_for_a_book(){
+void search_for_a_book(int way){
     printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\nChoice(1-2-3-4)?\n");
     int x,y;
     char c='n';
@@ -567,19 +581,21 @@ case 4:
     y=search_by_category();
     break;
     }
-if(y==0)
+if(y==0){
     {printf("Do you wish to retry the search(Y/N)?\n");
         scanf("%c",&c);}
         toupper(c);
     if(c=='Y'){
-        search_for_a_book();}
-    //else
-        //main_menu();
-
+        search_for_a_book(way);}
+    }
+    if (way==1)
+    wait_for_it(1);
 }
 
 void insert(){
-    int s;
+    char ISBN[15];
+    int x;
+    bookarraysize++;
 
      printf("Enter information of the new book\n");
      printf("Please enter book's title: ");
@@ -589,7 +605,12 @@ void insert(){
      printf("Please enter publisher of the book: ");
      scanf("%s",books[bookarraysize].publisher);
      printf("Please enter ISBN of book: ");
-     scanf("%s",books[bookarraysize].ISBN);
+     scanf("%s",ISBN);
+     check_ISBN_in_books(ISBN);
+     if(x==-1)
+        strcpy(books[bookarraysize].ISBN,ISBN);
+     else
+        printf("Same ISBN already exists for another registered book!!");
      printf("Please enter date of publication: ");
      scanf("%s",books[bookarraysize].DateOfPuplication);
      printf("Please enter category of book: ");
@@ -603,7 +624,7 @@ void insert(){
      {
          save_insert();
      }*/
-
+wait_for_it(1);
  }
  /*void save_insert()
  {
@@ -632,7 +653,9 @@ void insert(){
              books[i].current_available_number_of_copies+=copies;
             }
 
-   } /*printf("%d\n",r);*/}
+   } /*printf("%d\n",r);*/
+   wait_for_it(1);
+   }
 
 void delete_book(){
     char ISBN[18];
@@ -667,21 +690,30 @@ void delete_book(){
            strcpy( books[i].ISBN ,"\0" );
            strcpy( books[i].DateOfPuplication  ,"\0" );
            strcpy( books[i].category  , "\0" );*/
+           printf("Book deleted successfully!!");
            bookarraysize--; // decrease size of the book array by 1
 
 }
-else printf("NOT FOUND\n");
+else printf("BOOK NOT FOUND\n");
+wait_for_it(1);
 }
 
 void register_(){
     int n;
+    char ID[10];
+    int x;
     n=memberarraysize++;
     printf("Please enter member's first name: ");
     scanf("%s",members[n].first_name);
     printf("Please enter member's last name: ");
     scanf("%s",members[n].member_Phone_Number);
     printf("Please enter member's ID: ");
-    scanf("%s",members[n].ID);
+    scanf("%s",ID);
+    x=check_ID(ID);
+    if(x==-1)
+        strcpy(members[n].ID,ID);
+    else
+        printf("Same ID already exits for another registered member!!");
     printf("Please enter member's address:\n");
     printf("building: ");
     scanf("%s",members[n].member_address.building);
@@ -695,16 +727,20 @@ void register_(){
     scanf("%d",members[n].member_age);
     printf("Please enter member's e-mail: ");
     scanf("%s",members[n].member_Email);
+    wait_for_it(2);
 }
 void remove_member (){
 int n=memberarraysize;
 int i;
+int flag=0;
 int k;
 char*ID;
+ID=(char*)malloc(15*sizeof(char));
 printf("Please enter member's ID: ");
 scanf("%s",ID);
 for(i=0;i<n;i++){
     if(strcmp(members[i].ID,ID)==1){
+            flag=1;
         for (k=i;k<n;k++){
             members[i]=members[i+1];
         }
@@ -712,9 +748,15 @@ for(i=0;i<n;i++){
 
     }
 }
+if(flag==1)
+{
+    printf("Member removed successfully!!");
+}
+else if(flag==0)
+    printf("Member wasn't found!!");
 
 
-
+wait_for_it(2);
 
 }
 
@@ -771,11 +813,134 @@ void saveborrow()
     fclose(fborrow);
 
 }
+void print_books(){
+    int n=bookarraysize;
+    int i;
+    for(i=0;i<n;i++)
+    {
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
+           books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,
+           books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
+    }
+    wait_for_it(5);
+}
+
+void print_members(){
+    int n=memberarraysize;
+    int i;
+    for(i=0;i<n;i++)
+    {
+        printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
+               ,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email
+               ,members[i].borrows);
+    }
+    wait_for_it(5);
+}
+
+void print_borrows(){
+    int n=borrowarraysize;
+    int i;
+    for(i=0;i<n;i++)
+    {
+        printf("%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+               ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month,borrows[i].date_due_to_return.year
+               ,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
+    }
+    wait_for_it(5);
+}
+
+
+
+void print_all(){
+    int x;
+
+    printf("((1)print all books\n2)print all members\n3)print all borrows\n4)back to main menu\n))");
+    printf("Enter your choice");
+    scanf("%d",&x);
+    switch (x){
+    case 1:
+        sleep(0.5);
+        system("cls");
+        print_books();
+        break;
+    case 2:
+        sleep(0.5);
+        system("cls");
+        print_members();
+        break;
+    case 3:
+        sleep(0.5);
+        system("cls");
+        print_borrows();
+        break;
+    case 4:
+        sleep(0.5);
+        system("cls");
+        main_menu();
+        break;
+    }
+
+}
+
+void borrow_book(char *ID){
+    borrowarraysize++;
+    int k;
+    search_for_a_book(2);
+    printf("Which of the books in the list do you wish to borrow?(Enter its list number)");
+    scanf("%d",&k);
+    if (found[k].current_available_number_of_copies>0){
+    strcpy(borrows[borrowarraysize].borrowed_ISBN,found[k].ISBN);
+    strcpy(borrows[borrowarraysize].user_i,ID);
+    printf("Please enter Dates as following\n Day/Month/Year");
+printf("Date issued: ");
+      scanf("%d%d%d",borrows[borrowarraysize].date_borrowed.day,borrows[borrowarraysize].date_borrowed.month,borrows[borrowarraysize].date_borrowed.year);
+printf("Date due return: ");
+      scanf("%d%d%d",borrows[borrowarraysize].date_due_to_return.day,borrows[borrowarraysize].date_due_to_return.month,borrows[borrowarraysize].date_due_to_return.year);
+borrows[borrowarraysize].date_returned.day=0;
+borrows[borrowarraysize].date_returned.month=0;
+borrows[borrowarraysize].date_returned.year=0;
+int z;
+char ISBN[20];
+strcpy(ISBN,found[k].ISBN);
+z=check_ISBN_in_books(ISBN);
+books[z].current_available_number_of_copies--;
+}
+}
+void check_member_books(){
+    char ID[9];
+    int flag=0;
+    int index;
+    int i;
+printf("please enter user ID:");
+scanf("%s",ID);
+for(i=0;i<memberarraysize;i++){
+    if(strcmp(ID,members[i].ID)==1)
+        { flag=1;
+        index=i;
+        break;
+        }
+}
+if (flag==1)
+    printf("User ID is Valid.");
+    else{
+            printf("Wrong ID");}
+
+
+    if(members[index].borrows<3){
+        borrow_book(ID);}
+    else
+        printf("Sorry, you can't borrow more books");
+}
+
 void savetotal()
 {
     savebook();
     saveborrow();
     savemember();
+    printf("Saved successfully!!");
+    sleep(1.5);
+    system("cls");
+    main_menu();
 }
  void my_exit()
  { char c='y' ;
@@ -802,25 +967,35 @@ else
 
 
 void bookmanagement(){
-    int x;
-printf("1)insert a new book\n2)search for a book\n3)add a new copy\n 4)delete a book\n5)return to main menu");
+    int x,y;
+printf("1)insert a new book\n2)search for a book\n3)add a new copy\n4)delete a book\n5)return to main menu\n");
 do{
 printf("Please enter your choice: ");
 scanf("%d",&x);}while(x<=0|x>4);
 switch(x){
 case 1:
+    sleep(0.5);
+    system("cls");
     insert();
     break;
 case 2:
-    search_for_a_book();
+    sleep(0.5);
+    system("cls");
+    search_for_a_book(1);
     break;
 case 3:
+    sleep(0.5);
+    system("cls");
     add_new_copy();
     break;
 case 4:
+    sleep(0.5);
+    system("cls");
     delete_book();
     break;
 case 5:
+    sleep(0.5);
+    system("cls");
     main_menu();
     break;}
 }
@@ -832,41 +1007,63 @@ printf("Enter your choice: ");
 scanf("%d",&x);}while(x<=-0|x>3);
 switch(x){
 case 1:
+    sleep(0.5);
+    system("cls");
     most_popular_books();
-break;
+    break;
 case 2:
+    sleep(0.5);
+    system("cls");
     overdue_books();
     break;
 case 3:
+    sleep(0.5);
+    system("cls");
     main_menu();
     break;
 }
 }
 
-
 void main_menu(){
     int x;
-printf("1)book management\n2)member management\n3)borrow management\n4)administrative actions\n5) save changes\n6) exit\n");
+printf("1)book management\n2)member management\n3)borrow management\n4)administrative actions\n5)print all data\n6) save changes\n7) exit\n");
 do{
 printf("Enter your choice: ");
-scanf("%d",&x);}while(x<=-0|x>6);
+scanf("%d",&x);}while(x<=-0|x>7);
 switch(x){
 case 1:
-bookmanagement();
-break;
+    sleep(0.5);
+    system("cls");
+    bookmanagement();
+    break;
 case 2:
+    sleep(0.5);
+    system("cls");
     member_management();
     break;
 case 3:
+    sleep(0.5);
+    system("cls");
     borrow_management();
     break;
 case 4:
+    sleep(0.5);
+    system("cls");
     administrative();
     break;
 case 5:
-    savetotal();
+    sleep(0.5);
+    system("cls");
+    print_all();
     break;
 case 6:
+    sleep(0.5);
+    system("cls");
+    savetotal();
+    break;
+case 7:
+    sleep(0.5);
+    system("cls");
     my_exit();
     break;
 }
@@ -879,12 +1076,18 @@ printf("Please enter your choice: ");
 scanf("%d",&x);
 switch(x){
 case 1:
+    sleep(0.5);
+    system("cls");
     register_();
     break;
 case 2:
+    sleep(0.5);
+    system("cls");
     remove_member();
     break;
 case 3:
+    sleep(0.5);
+    system("cls");
     main_menu();
     break;
     }
@@ -897,18 +1100,44 @@ printf("Please enter your choice: ");
 scanf("%d",&x);
 switch(x){
 case 1:
-    //borrow();
+    sleep(0.5);
+    system("cls");
+    check_member_books();
     break;
 case 2:
+    sleep(0.5);
+    system("cls");
     return_book();
     break;
 case 3:
+    sleep(0.5);
+    system("cls");
     main_menu();
     break;
 }
 }
 
-
+void wait_for_it(int x){
+    printf("((\nPress any key to return back\npress 'M' to return to main menu\n))");
+    char c;
+    scanf("%c",&c);
+    sleep(0.5);
+    system("cls");
+    if(c=='M'||c=='m')
+        main_menu;
+    switch(x){
+case 1:
+    bookmanagement();
+case 2:
+    member_management();
+case 3:
+    borrow_management();
+case 4:
+    administrative();
+case 5:
+    print_all();
+    }
+}
 
 int main()
 {
