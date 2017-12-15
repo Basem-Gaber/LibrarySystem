@@ -718,9 +718,92 @@ for(i=0;i<n;i++){
 
 }
 
+void savebook()
+{
+    FILE *fbook;
+    int i;
+    fbook=fopen("books.txt","w");
+    if (fbook!=NULL)
+    {
+        for (i=0;i< bookarraysize ; i++ )
+        {
+            fprintf(fbook,"%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
+                        ,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year
+                        ,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
+        }
+
+    }
+    fclose(fbook);
+
+}
+void savemember()
+{
+    FILE *fmember;
+    int i;
+    fmember=fopen("members.txt","w");
+    if (fmember!=NULL)
+    {
+        for (i=0;i< memberarraysize ; i++ )
+        {
+            fprintf(fmember,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
+                          ,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email,members[i].borrows);
+        }
+
+    }
+    fclose(fmember);
+
+}
+void saveborrow()
+{
+    FILE *fborrow;
+    int i;
+    fborrow=fopen("borrows.txt","w");
+    if (fborrow!=NULL)
+    {
+        for (i=0;i< borrowarraysize ; i++ )
+        {
+            fprintf(fborrow, "%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+                    ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month
+                    ,borrows[i].date_due_to_return.year,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
+        }
+
+    }
+    fclose(fborrow);
+
+}
+void savetotal()
+{
+    savebook();
+    saveborrow();
+    savemember();
+}
+ void my_exit()
+ { char c='y' ;
+    printf("do you want to save the changes\n");
+     printf("Y/N\n");
+     getchar();
+     scanf("%c",&c);
+
+     while (c!='y' && c!='Y' && c!='n' && c!='N')
+     {
+        printf("do you want to save the changes\n");
+     printf("Y/N\n");
+     scanf("%c",&c);
+     }
+     if (c=='y'|| c=='Y')
+     {
+       savetotal();
+     }
+else
+    exit(0);
+
+     }
+
+
+
 void bookmanagement(){
     int x;
-printf("1)insert a new book\n2)search for a book\n3)add a new copy\n 4)delete a book\n");
+printf("1)insert a new book\n2)search for a book\n3)add a new copy\n 4)delete a book\n5)return to main menu");
 do{
 printf("Please enter your choice: ");
 scanf("%d",&x);}while(x<=0|x>4);
@@ -736,6 +819,9 @@ case 3:
     break;
 case 4:
     delete_book();
+    break;
+case 5:
+    main_menu();
     break;}
 }
 void administrative(){
@@ -763,7 +849,7 @@ void main_menu(){
 printf("1)book management\n2)member management\n3)borrow management\n4)administrative actions\n5) save changes\n6) exit\n");
 do{
 printf("Enter your choice: ");
-scanf("%d",&x);}while(x<=-0|x>5);
+scanf("%d",&x);}while(x<=-0|x>6);
 switch(x){
 case 1:
 bookmanagement();
@@ -778,10 +864,10 @@ case 4:
     administrative();
     break;
 case 5:
-    //save();
+    savetotal();
     break;
 case 6:
-    //my_exit();
+    my_exit();
     break;
 }
 }
@@ -835,24 +921,6 @@ int main()
     borrowarraysize=read_borrows_file();
     memberarraysize=read_members_file();
     bookarraysize=read_books_file();
-    for(i=0;i<bookarraysize;i++)
-    //{
-        //printf("%s,%s,%s,%s,%d/%d/%d,%d,%d,%s\n",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
-               //,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year
-               //,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category);
-    //}
-    for(i=0;i<memberarraysize;i++)
-    //{
-        //printf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building
-               //,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email);
-    //}/
-
-    for(i=0;i<borrowarraysize;i++)
-    //{
-        //printf("%s,%s,%d-%d-%d,%d/%d/%d,%d/%d/%d\n",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
-                    //,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month
-                    //,borrows[i].date_due_to_return.year,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
-    //}
     main_menu();
     return 0;
 }
