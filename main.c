@@ -598,28 +598,28 @@ void insert(){
     bookarraysize++;
 
      printf("Enter information of the new book\n");
-     printf("Please enter book's title: ");
-     scanf("%s",books[bookarraysize].Book_Title);
-     printf("Please enter the author of the book: ");
-     scanf("%s",books[bookarraysize].Author);
-     printf("Please enter publisher of the book: ");
-     scanf("%s",books[bookarraysize].publisher);
-     printf("Please enter ISBN of book: ");
-     scanf("%s",ISBN);
+     printf("Please enter book's title: ");getchar();
+     scanf("%[^\n]",books[bookarraysize].Book_Title);
+     printf("Please enter the author of the book: ");getchar();
+     scanf("%[^\n]",books[bookarraysize].Author);
+     printf("Please enter publisher of the book: ");getchar();
+     scanf("%[^\n]",books[bookarraysize].publisher);
+     printf("Please enter ISBN of book: ");getchar();
+     scanf("%[^\n]",ISBN);
      x=check_ISBN_in_books(ISBN);
      if(x==-1)
         strcpy(books[bookarraysize].ISBN,ISBN);
-     else
-       {
+     else{
+        printf("Same ISBN already exists for another registered book!!");
+        printf("Please enter ISBN of book: ");getchar();
+     scanf("%[^\n]",ISBN);}
 
-        printf("Same ISBN already exists for another registered book!!");}
-     printf("Please enter date of publication: ");
-     scanf("%d%d%d",&books[ bookarraysize ].DateOfPuplication.day,&books[bookarraysize ].DateOfPuplication.month,&books[bookarraysize ].DateOfPuplication.year );
-     printf("Please enter category of book: ");
-     scanf("%s",books[bookarraysize].category);
-     printf("Please enter number of copies: ");
-     scanf("%d",&books[bookarraysize].number_of_copies);
-
+     printf("Please enter date of publication:(day month year) ");
+     scanf("%d%d%d",&books[bookarraysize].DateOfPuplication.day,&books[bookarraysize].DateOfPuplication.month,&books[bookarraysize].DateOfPuplication.year);
+     printf("Please enter category of book: ");getchar();
+     scanf("%[^\n]",books[bookarraysize].category);
+     printf("Please enter number of copies: ");getchar();
+     scanf("%[^\n]",&books[bookarraysize].number_of_copies);
      bookarraysize++;
     /* printf("to save press 6");
       scanf("%d",&s);
@@ -707,29 +707,32 @@ void register_(){
     int x;
     n=memberarraysize++;
     printf("Please enter member's first name: ");
-    scanf("%s",members[n].first_name);
+    scanf("%[^\n]",members[n].first_name);
     printf("Please enter member's last name: ");
-    scanf("%s",members[n].member_Phone_Number);
+    scanf("%[^\n]",members[n].member_Phone_Number);
     printf("Please enter member's ID: ");
-    scanf("%s",ID);
+    scanf("%[^\n]",ID);
     x=check_ID(ID);
     if(x==-1)
         strcpy(members[n].ID,ID);
-    else
+    else{
         printf("Same ID already exits for another registered member!!");
+        printf("Please enter member's ID: ");
+    scanf("%[^\n]",ID);
+    }
     printf("Please enter member's address:\n");
     printf("building: ");
-    scanf("%s",members[n].member_address.building);
+    scanf("%[^\n]",members[n].member_address.building);
     printf("\nstreet: ");
-    scanf("%s",members[n].member_address.street);
+    scanf("%[^\n]",members[n].member_address.street);
     printf("\ncity: ");
-    scanf("%s",members[n].member_address.city);
+    scanf("%[^\n]",members[n].member_address.city);
     printf("Please enter member's phone number: ");
     scanf("%d",members[n].member_Phone_Number);
     printf("Please enter member's age: ");
     scanf("%d",members[n].member_age);
     printf("Please enter member's e-mail: ");
-    scanf("%s",members[n].member_Email);
+    scanf("%[^\n]",members[n].member_Email);
     wait_for_it(2);
 }
 void remove_member (){
@@ -833,7 +836,7 @@ void print_members(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
+        printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
                ,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email
                ,members[i].borrows);
     }
@@ -845,7 +848,7 @@ void print_borrows(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+        printf("%d)%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",i+1,borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
                ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month,borrows[i].date_due_to_return.year
                ,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
     }
@@ -917,7 +920,7 @@ void check_member_books(){
 printf("please enter user ID:");
 scanf("%s",ID);
 for(i=0;i<memberarraysize;i++){
-    if(strcmp(ID,members[i].ID)==1)
+    if(strcmp(ID,members[i].ID)==0)
         { flag=1;
         index=i;
         break;
@@ -935,15 +938,20 @@ if (flag==1)
         printf("Sorry, you can't borrow more books");
 }
 
-void savetotal()
+void savetotal(int way)
 {
     savebook();
     saveborrow();
     savemember();
     printf("Saved successfully!!");
+    if(way==1){
     sleep(1.5);
     system("cls");
-    main_menu();
+    main_menu();}
+    if(way==2){
+        sleep(1.5);
+        exit(45);
+    }
 }
  void my_exit()
  { char c='y' ;
@@ -960,7 +968,7 @@ void savetotal()
      }
      if (c=='y'|| c=='Y')
      {
-       savetotal();
+       savetotal(2);
      }
 else
     exit(0);
@@ -1062,7 +1070,7 @@ case 5:
 case 6:
     sleep(0.5);
     system("cls");
-    savetotal();
+    savetotal(1);
     break;
 case 7:
     sleep(0.5);
@@ -1123,22 +1131,31 @@ case 3:
 void wait_for_it(int x){
     printf("((\nPress any key to return back\npress 'M' to return to main menu\n))");
     char c;
+    getchar();
     scanf("%c",&c);
+    printf("%c",c);
     sleep(0.5);
     system("cls");
-    if(c=='M'||c=='m')
-        main_menu;
+    if(c=='M'||c=='m'){
+        main_menu();}
+        else{
     switch(x){
 case 1:
     bookmanagement();
+    break;
 case 2:
     member_management();
+    break;
 case 3:
     borrow_management();
+    break;
 case 4:
     administrative();
+    break;
 case 5:
     print_all();
+    break;
+    }
     }
 }
 
