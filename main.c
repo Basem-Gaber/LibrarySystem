@@ -606,17 +606,20 @@ void insert(){
      scanf("%s",books[bookarraysize].publisher);
      printf("Please enter ISBN of book: ");
      scanf("%s",ISBN);
-     check_ISBN_in_books(ISBN);
+     x=check_ISBN_in_books(ISBN);
      if(x==-1)
         strcpy(books[bookarraysize].ISBN,ISBN);
      else
-        printf("Same ISBN already exists for another registered book!!");
+       {
+
+        printf("Same ISBN already exists for another registered book!!");}
      printf("Please enter date of publication: ");
-     scanf("%s",books[bookarraysize].DateOfPuplication);
+     scanf("%d%d%d",&books[ bookarraysize ].DateOfPuplication.day,&books[bookarraysize ].DateOfPuplication.month,&books[bookarraysize ].DateOfPuplication.year );
      printf("Please enter category of book: ");
      scanf("%s",books[bookarraysize].category);
      printf("Please enter number of copies: ");
      scanf("%d",&books[bookarraysize].number_of_copies);
+
      bookarraysize++;
     /* printf("to save press 6");
       scanf("%d",&s);
@@ -818,7 +821,7 @@ void print_books(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
            books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,
            books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
     }
@@ -971,7 +974,7 @@ void bookmanagement(){
 printf("1)insert a new book\n2)search for a book\n3)add a new copy\n4)delete a book\n5)return to main menu\n");
 do{
 printf("Please enter your choice: ");
-scanf("%d",&x);}while(x<=0|x>4);
+scanf("%d",&x);}while(x<=0|x>5);
 switch(x){
 case 1:
     sleep(0.5);
