@@ -20,7 +20,7 @@ typedef struct{
 char Book_Title[100];
 char Author[50];
 char publisher[50];
-char ISBN[18]; // International Standard Book Number ..Example: 978-3-16-148410-0
+char ISBN[20]; // International Standard Book Number ..Example: 978-3-16-148410-0
 Date DateOfPuplication; // Example 30/11/2017
 int number_of_copies ;
 int current_available_number_of_copies;
@@ -595,51 +595,37 @@ if(y==0){
 void insert(){
     char ISBN[15];
     int x;
-    bookarraysize++;
 
      printf("Enter information of the new book\n");
      printf("Please enter book's title: ");getchar();
-     scanf("%[^\n]",books[bookarraysize].Book_Title);
+     //fgets(books[bookarraysize].Book_Title,100,stdin);
+     scanf("%[^\n]s",books[bookarraysize].Book_Title);
      printf("Please enter the author of the book: ");getchar();
-     scanf("%[^\n]",books[bookarraysize].Author);
+     scanf("%[^\n]s",books[bookarraysize].Author);
      printf("Please enter publisher of the book: ");getchar();
-     scanf("%[^\n]",books[bookarraysize].publisher);
+     scanf("%[^\n]s",books[bookarraysize].publisher);
      printf("Please enter ISBN of book: ");getchar();
-     scanf("%[^\n]",ISBN);
-     x=check_ISBN_in_books(ISBN);
-     if(x==-1)
-        strcpy(books[bookarraysize].ISBN,ISBN);
-     else{
+     scanf("%[^\n]s",books[bookarraysize].ISBN);
+     x=check_ISBN_in_books(books[bookarraysize].ISBN);
+     if(x!=-1)
+     {
         printf("Same ISBN already exists for another registered book!!");
         printf("Please enter ISBN of book: ");getchar();
-     scanf("%[^\n]",ISBN);}
+     scanf("%[^\n]s",books[bookarraysize].ISBN);}
 
      printf("Please enter date of publication:(day month year) ");
      scanf("%d%d%d",&books[bookarraysize].DateOfPuplication.day,&books[bookarraysize].DateOfPuplication.month,&books[bookarraysize].DateOfPuplication.year);
+      printf("Please enter number of copies: ");getchar();
+     scanf("%d",&books[bookarraysize].number_of_copies);
+     printf("Please enter the number of current available copies: \n");getchar();
+     scanf("%d",&books[bookarraysize].current_available_number_of_copies);
      printf("Please enter category of book: ");getchar();
-     scanf("%[^\n]",books[bookarraysize].category);
-     printf("Please enter number of copies: ");getchar();
-     scanf("%[^\n]",&books[bookarraysize].number_of_copies);
-     bookarraysize++;
-    /* printf("to save press 6");
-      scanf("%d",&s);
-     if (s==6)
-     {
-         save_insert();
-     }*/
-wait_for_it(1);
+     scanf("%[^\n]s",books[bookarraysize].category);
+     books[bookarraysize].borrows=books[bookarraysize].number_of_copies-books[bookarraysize].current_available_number_of_copies;
+        bookarraysize++;
+    wait_for_it(1);
  }
- /*void save_insert()
- {
-     FILE* bookPtr;
-     bookPtr=fopen ("program1.txt" ,"a");
-     if(bookPtr == NULL)
-   {
-      printf("Error!");
-      exit(1);
-   }
-   fprintf(bookPtr,"%s,%s,%s,%s,%s,%s,%d,%d\n",books->Book_Title,books->Auther,books->publisher ,books->ISBN,books->DateOfPuplication,books->category,books->number_of_copies,books->number_of_copies );
- }*/
+
  void add_new_copy(){
     char ISBN[18];
     int copies;
@@ -775,7 +761,7 @@ void savebook()
     {
         for (i=0;i< bookarraysize ; i++ )
         {
-            fprintf(fbook,"%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
+            fprintf(fbook,"%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
                         ,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year
                         ,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
         }
@@ -793,7 +779,7 @@ void savemember()
     {
         for (i=0;i< memberarraysize ; i++ )
         {
-            fprintf(fmember,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
+            fprintf(fmember,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
                           ,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email,members[i].borrows);
         }
 
@@ -810,7 +796,7 @@ void saveborrow()
     {
         for (i=0;i< borrowarraysize ; i++ )
         {
-            fprintf(fborrow, "%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+            fprintf(fborrow, "%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d\n",borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
                     ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month
                     ,borrows[i].date_due_to_return.year,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
         }
@@ -824,7 +810,7 @@ void print_books(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
            books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,
            books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
     }
@@ -836,7 +822,7 @@ void print_members(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
+        printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
                ,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email
                ,members[i].borrows);
     }
@@ -848,7 +834,7 @@ void print_borrows(){
     int i;
     for(i=0;i<n;i++)
     {
-        printf("%d)%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d",i+1,borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
+        printf("%d)%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d\n",i+1,borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
                ,borrows[i].date_borrowed.year,borrows[i].date_due_to_return.day,borrows[i].date_due_to_return.month,borrows[i].date_due_to_return.year
                ,borrows[i].date_returned.day,borrows[i].date_returned.month,borrows[i].date_returned.year);
     }
@@ -1012,7 +998,7 @@ case 5:
 }
 void administrative(){
     int x;
-    printf("1)most popular books\n2)overdue books\n");
+    printf("1)most popular books\n2)overdue books\n3)back to main menu\n");
     do{
 printf("Enter your choice: ");
 scanf("%d",&x);}while(x<=-0|x>3);
