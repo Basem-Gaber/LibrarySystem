@@ -348,7 +348,7 @@ void return_book(){
 }
 
 
-book *found;//global found books array...will be malloced in main
+book *foundbks;//global found books array...will be malloced in main
 
 
 void display_found(int n){
@@ -357,36 +357,37 @@ void display_found(int n){
     printf("Search Results:\n");
     for(i=0;i<n;i++)
     {
-        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s\n",i+1,found[i].Book_Title,found[i].Author,found[i].publisher,found[i].ISBN
-               ,found[i].DateOfPuplication.day,found[i].DateOfPuplication.month,found[i].DateOfPuplication.year
-               ,found[i].number_of_copies,found[i].current_available_number_of_copies,found[i].category);
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s\n",i+1,foundbks[i].Book_Title,foundbks[i].Author,foundbks[i].publisher,foundbks[i].ISBN
+               ,foundbks[i].DateOfPuplication.day,foundbks[i].DateOfPuplication.month,foundbks[i].DateOfPuplication.year
+               ,foundbks[i].number_of_copies,foundbks[i].current_available_number_of_copies,foundbks[i].category);
     }
 }
 
 void book_struct_copy(int x,int y){
-    strcpy(found[x].Author,books[y].Author);
-    strcpy(found[x].Book_Title,books[y].Book_Title);
-    strcpy(found[x].category,books[y].category);
-    found[x].current_available_number_of_copies=books[y].current_available_number_of_copies;
-    found[x].DateOfPuplication=books[y].DateOfPuplication;
-    strcpy(found[x].ISBN,books[y].ISBN);
-    found[x].number_of_copies=books[y].number_of_copies;
-    strcpy(found[x].publisher,books[y].publisher);
+    strcpy(foundbks[x].Author,books[y].Author);
+    strcpy(foundbks[x].Book_Title,books[y].Book_Title);
+    strcpy(foundbks[x].category,books[y].category);
+    foundbks[x].current_available_number_of_copies=books[y].current_available_number_of_copies;
+    foundbks[x].DateOfPuplication=books[y].DateOfPuplication;
+    strcpy(foundbks[x].ISBN,books[y].ISBN);
+    foundbks[x].number_of_copies=books[y].number_of_copies;
+    strcpy(foundbks[x].publisher,books[y].publisher);
+    foundbks[x].borrows=books[y].borrows;
 
 
 }
 
 void capitalization(char*string,int n){
     int i;
-    char c;
-    c=toupper(string[0]);
-    string[0]=c;
+    char cc;
+    cc=toupper(string[0]);
+    string[0]=cc;
     for(i=1;i<n;i++)
     {
         if(string[i]==' '&&!(string[i+1]=='t' && string[i+2]=='o'))
         {
-            c=toupper(string[i+1]);
-            string[i+1]=c;
+            cc=toupper(string[i+1]);
+            string[i+1]=cc;
         }
     }
 
@@ -402,7 +403,6 @@ int search_by_title(){
     int i,j,k,l,x=0,titlelen=0,keylen=0,found=0,not_duplicate=1;
     keylen=strlen(key);
     capitalization(key,keylen);
-    printf("%s\n\n",key);
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].Book_Title,key);
@@ -416,7 +416,7 @@ int search_by_title(){
     for(i=0;i<bookarraysize;i++)
     {
         int titlelen=strlen(books[i].Book_Title);
-        strcpy(books[i].Book_Title,title);
+        strcpy(title,books[i].Book_Title);
         for(j=0;j<titlelen;j++)
         {
             if(title[j]==key[0])
@@ -425,8 +425,10 @@ int search_by_title(){
                 {
                     if(title[j+k]!=key[k])
                         break;
-                    if(k==keylen-1)
+                    if(k==keylen-2)
+                    {
                         found=1;
+                    }
                 }
 
             }
@@ -469,13 +471,15 @@ int search_by_author(){
     printf("Please enter the name of the author: \n");
     getchar();
     scanf("%[^\n]",key);
-    toupper(key);
+    char cc;
+    cc=toupper(key[0]);
+    key[0]=cc;
     int i,x=0;
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].Author,key);
         if(x==0){
-            found[foundcount]=books[i];
+            book_struct_copy(foundcount,i);
             foundcount++;
             book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -508,7 +512,7 @@ int search_by_ISBN(){
     {
         x=strcmp(books[i].ISBN,key);
         if(x==0){
-            found[foundcount]=books[i];
+            book_struct_copy(foundcount,i);
             foundcount++;
             book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -536,13 +540,15 @@ int search_by_category(){
     book_index=(int*)malloc(10*sizeof(int));
     printf("Please enter the category: \n");
     scanf("%s",key);
-    toupper(key);
+    char cc;
+    cc=toupper(key[0]);
+    key[0]=cc;
     int i,x=0;
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].category,key);
         if(x==0){
-            found[foundcount]=books[i];
+            book_struct_copy(foundcount,i);
             foundcount++;
             book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -580,13 +586,6 @@ case 3:
 case 4:
     y=search_by_category();
     break;
-    }
-if(y==0){
-    {printf("Do you wish to retry the search(Y/N)?\n");
-        scanf("%c",&c);}
-        toupper(c);
-    if(c=='Y'){
-        search_for_a_book(way);}
     }
     if (way==1)
     wait_for_it(1);
@@ -880,8 +879,8 @@ void borrow_book(char *ID){
     search_for_a_book(2);
     printf("Which of the books in the list do you wish to borrow?(Enter its list number)");
     scanf("%d",&k);
-    if (found[k].current_available_number_of_copies>0){
-    strcpy(borrows[borrowarraysize].borrowed_ISBN,found[k].ISBN);
+    if (foundbks[k].current_available_number_of_copies>0){
+    strcpy(borrows[borrowarraysize].borrowed_ISBN,foundbks[k].ISBN);
     strcpy(borrows[borrowarraysize].user_i,ID);
     printf("Please enter Dates as following\n Day/Month/Year");
 printf("Date issued: ");
@@ -893,7 +892,7 @@ borrows[borrowarraysize].date_returned.month=0;
 borrows[borrowarraysize].date_returned.year=0;
 int z;
 char ISBN[20];
-strcpy(ISBN,found[k].ISBN);
+strcpy(ISBN,foundbks[k].ISBN);
 z=check_ISBN_in_books(ISBN);
 books[z].current_available_number_of_copies--;
 }
@@ -1149,7 +1148,7 @@ int main()
 {
     books=(book*)malloc(50*sizeof(book));
     overdue=(borrow*)malloc(50*sizeof(borrow));
-    found=(book*)malloc(50*sizeof(book));
+    foundbks=(book*)malloc(50*sizeof(book));
     members=(member*)malloc(50*sizeof(member));
     borrows=(borrow*)malloc(50*sizeof(member));
     int i,borrowsize=0,membersize=0,booksize=0;
