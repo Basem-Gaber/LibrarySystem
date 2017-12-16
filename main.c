@@ -230,7 +230,7 @@ wait_for_it(4);
 void edit_book(){
     int i,x=0,y=0,bookindex=0;
     char ISBN[15],newdata[50];
-    printf("Please enter the ISBN if the book you wish to modify: \n");
+    printf("Please enter the ISBN of the book you wish to modify: \n");
     scanf("%s",ISBN);
     for(i=0;i<bookarraysize;i++)
     {
@@ -243,21 +243,22 @@ void edit_book(){
 
     }
     printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
-    scanf("%d",y);
+    scanf("%d",&y);
     printf("Please enter the new data you wish to insert:\n");
-    scanf("%s",newdata);
+    getchar();
+    scanf("%[^\n]",newdata);
     switch (y){
 case 1:
-    strcpy(newdata,books[bookindex].Book_Title);
+    strcpy(books[bookindex].Book_Title,newdata);
     break;
 case 2:
-    strcpy(newdata,books[bookindex].Author);
+    strcpy(books[bookindex].Author,newdata);
     break;
 case 3:
-    strcpy(newdata,books[bookindex].category);
+    strcpy(books[bookindex].category,newdata);
     break;
 case 4:
-    strcpy(newdata,books[bookindex].publisher);
+    strcpy(books[bookindex].publisher,newdata);
     break;
     }
     wait_for_it(1);
@@ -642,6 +643,7 @@ void insert(){
             }
 
    } /*printf("%d\n",r);*/
+   printf("Copies added successfully!!");
    wait_for_it(1);
    }
 
@@ -964,10 +966,10 @@ else
 
 void bookmanagement(){
     int x,y;
-printf("1)insert a new book\n2)search for a book\n3)add a new copy\n4)delete a book\n5)return to main menu\n");
+printf("1)insert a new book\n2)search for a book\n3)add a new copy\n4)delete a book\n5)edit a book\n6)return to main menu\n");
 do{
 printf("Please enter your choice: ");
-scanf("%d",&x);}while(x<=0|x>5);
+scanf("%d",&x);}while(x<=0|x>6);
 switch(x){
 case 1:
     sleep(0.5);
@@ -990,6 +992,11 @@ case 4:
     delete_book();
     break;
 case 5:
+    sleep(0.5);
+    system("cls");
+    edit_book();
+    break;
+case 6:
     sleep(0.5);
     system("cls");
     main_menu();
@@ -1118,7 +1125,6 @@ void wait_for_it(int x){
     char c;
     getchar();
     scanf("%c",&c);
-    printf("%c",c);
     sleep(0.5);
     system("cls");
     if(c=='M'||c=='m'){
