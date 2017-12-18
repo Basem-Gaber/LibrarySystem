@@ -1,3 +1,6 @@
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -12,6 +15,12 @@
 #define sleep(x) Sleep(1000 * x)
 #endif
 
+void red(){
+ system("COLOR 4");
+}
+void background(){
+system("COLOR FC");
+}
 typedef struct {
     int day, month, year;
 } Date;
@@ -872,7 +881,7 @@ void print_borrows(){
 
 void print_all(){
     int x;
-
+red();
     printf("((1)print all books\n2)print all members\n3)print all borrows\n4)back to main menu\n))");
     printf("Enter your choice");
     char c;
@@ -1075,7 +1084,10 @@ case '3':
 void main_menu(int way){
     int x;
     char c;
-printf("1)book management\n2)member management\n3)borrow management\n4)administrative actions\n5)print all data\n6) save changes\n7) exit\n");
+    printf("=============== Welcome to Library System ========================\n");
+    red();
+    background();
+printf("1)Book management\n2)Member management\n3)Borrow management\n4)Administrative actions\n5)Print all data\n6)Save changes\n7)Exit\n");
 printf("Enter your choice: ");
 c=wise_scan(way);
 switch(c){
@@ -1211,3 +1223,4 @@ int main()
     main_menu(2);
     return 0;
 }
+
