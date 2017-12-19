@@ -1070,7 +1070,7 @@ case '7':
 }
 void administrative(){
     int x;
-    printf("1)Most popular books\n2)Overdue books\n3)Save changes\n3)Back to main menu\n");
+    printf("1)Most popular books\n2)Overdue books\n3)Save changes\n4)Back to main menu\n");
 
 printf("Enter your choice: ");
 char c;
@@ -1179,7 +1179,7 @@ case '4':
 }
 void borrow_management (){
 int x;
-printf("1)Borrow\n2)Return book\n3)Save Changes\n3)Return to main menu\n");
+printf("1)Borrow\n2)Return book\n3)Save Changes\n4)Return to main menu\n");
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
