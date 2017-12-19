@@ -1,6 +1,4 @@
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -80,6 +78,7 @@ char wise_scan(int way){
     {
 
         printf("\nPlease enter a number from the list!!\n");
+        fflush(stdin);
             scanf("%c",&c);
             x=isdigit(c);
     }while(x!=1);
@@ -844,6 +843,7 @@ void saveborrow()
 void print_books(){
     int n=bookarraysize;
     int i;
+    printf("Book Title,Author,Publisher,ISBN,Date of Publication,Number of copies,Current Available,Category,Borrows\n");
     for(i=0;i<n;i++)
     {
         printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
@@ -856,6 +856,7 @@ void print_books(){
 void print_members(){
     int n=memberarraysize;
     int i;
+    printf("First Name,Last Name,ID,Address,Phone Number,Age,E-mail,Borrows\n");
     for(i=0;i<n;i++)
     {
         printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
@@ -868,6 +869,7 @@ void print_members(){
 void print_borrows(){
     int n=borrowarraysize;
     int i;
+    printf("ISBN,ID,Date borrowed,Date due to return,Date returned\n");
     for(i=0;i<n;i++)
     {
         printf("%d)%s,%s,%d/%d/%d,%d/%d/%d,%d/%d/%d\n",i+1,borrows[i].borrowed_ISBN,borrows[i].user_i,borrows[i].date_borrowed.day,borrows[i].date_borrowed.month
@@ -881,8 +883,8 @@ void print_borrows(){
 
 void print_all(){
     int x;
-red();
-    printf("((1)print all books\n2)print all members\n3)print all borrows\n4)back to main menu\n))");
+//red();
+    printf("((1)Print all books\n2)Print all members\n3)Print all borrows\n4)Save changes\n5)Back to main menu\n))");
     printf("Enter your choice");
     char c;
     c=wise_scan(1);
@@ -903,6 +905,11 @@ red();
         print_borrows();
         break;
     case '4':
+        sleep(0.5);
+    system("cls");
+    savetotal();
+    break;
+    case '5':
         sleep(0.5);
         system("cls");
         main_menu(1);
@@ -1003,6 +1010,7 @@ void savetotal(int way)
      {
         printf("do you want to save the changes\n");
      printf("Y/N\n");
+     fflush(stdin);
      scanf("%c",&c);
      }
      if (c=='y'|| c=='Y')
@@ -1018,7 +1026,7 @@ else
 
 void bookmanagement(){
     int x,y;
-printf("1)insert a new book\n2)search for a book\n3)add a new copy\n4)delete a book\n5)edit a book\n6)return to main menu\n");
+printf("1)Insert a new book\n2)Search for a book\n3)Add a new copy\n4)Delete a book\n5)Edit a book\n6)Save changes\n7)Return to main menu\n");
 
 printf("Please enter your choice: ");
 char c;
@@ -1052,12 +1060,17 @@ case '5':
 case '6':
     sleep(0.5);
     system("cls");
+    savetotal(1);
+    break;
+case '7':
+    sleep(0.5);
+    system("cls");
     main_menu(1);
     break;}
 }
 void administrative(){
     int x;
-    printf("1)most popular books\n2)overdue books\n3)back to main menu\n");
+    printf("1)Most popular books\n2)Overdue books\n3)Save changes\n3)Back to main menu\n");
 
 printf("Enter your choice: ");
 char c;
@@ -1074,6 +1087,11 @@ case '2':
     overdue_books();
     break;
 case '3':
+    sleep(0.5);
+    system("cls");
+    savetotal(1);
+    break;
+case '4':
     sleep(0.5);
     system("cls");
     main_menu(1);
@@ -1131,7 +1149,7 @@ case '7':
 
 void member_management(){
 int x;
-printf("1)Register\n2)Remove\n3)Return back to main menu\n");
+printf("1)Register\n2)Remove\n3)Save changes\n4)Return back to main menu\n");
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
@@ -1149,6 +1167,11 @@ case '2':
 case '3':
     sleep(0.5);
     system("cls");
+    savetotal(1);
+    break;
+case '4':
+    sleep(0.5);
+    system("cls");
     main_menu(1);
     break;
     }
@@ -1156,7 +1179,7 @@ case '3':
 }
 void borrow_management (){
 int x;
-printf("1)Borrow\n2)Return book\n3)Return to main menu\n");
+printf("1)Borrow\n2)Return book\n3)Save Changes\n3)Return to main menu\n");
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
@@ -1172,6 +1195,11 @@ case '2':
     return_book();
     break;
 case '3':
+    sleep(0.5);
+    system("cls");
+    savetotal(1);
+    break;
+case '4':
     sleep(0.5);
     system("cls");
     main_menu(1);
