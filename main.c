@@ -14,10 +14,10 @@
 #endif
 
 void red(){
- system("COLOR 4");
+ system("COLOR 4"); // change font color
 }
 void background(){
-system("COLOR FC");
+system("COLOR FC");// change background color
 }
 typedef struct {
     int day, month, year;
@@ -69,6 +69,8 @@ int bookarraysize;
 int memberarraysize;
 Date date_current;
 
+
+//wise scan function makes sure the user inputs an integer
 char wise_scan(int way){
     char c;
     int x;
@@ -85,6 +87,7 @@ char wise_scan(int way){
     return c;
 }
 
+//reading books from the file and storing them in the array
 int read_books_file (){
     FILE* f;
     int i=0;
@@ -106,6 +109,7 @@ int read_books_file (){
     return i;
 }
 
+//read members from file and store them in array
 int read_members_file(){
     FILE* f;
     int i=0;
@@ -126,6 +130,7 @@ int read_members_file(){
     return i;
 }
 
+//read borrows from file and store them in array
 int read_borrows_file(){
     FILE* f;
     int i=0;
@@ -151,6 +156,8 @@ int read_borrows_file(){
 
     return i;
 }
+
+//date_comparison...compares year first .. then month .. then day
 int date_compare(Date d1,Date d2){
     if(d1.year==0||d2.year==0)
         return -1;
@@ -175,13 +182,16 @@ int date_compare(Date d1,Date d2){
     }
 }
 
+//gets time programmatically
 void acquire_date_current(){
     time_t date_current1=time(NULL);
     struct tm tm=*localtime(&date_current1);
     date_current.day=tm.tm_mday;
-    date_current.month=tm.tm_mon+1;
-    date_current.year=tm.tm_year+1900;
+    date_current.month=tm.tm_mon+1;//month numbered from 1 to 11 .. must add 1
+    date_current.year=tm.tm_year+1900;//function gets years since 1900 .. must add 1900 to get current year
 }
+
+//checks for books whose due to return date has passed and wasn't returned using my date compare function
 void overdue_books(){
 int i=0,x,y,overcount=0;
 acquire_date_current();
@@ -220,10 +230,11 @@ wait_for_it(4);
 
 book*popular;
 
+//most popular books .. searches until popular count reaches 5
 void most_popular_books(){
     int i,j,max=0,popularcount=0;
     popular=(book*)malloc(5*sizeof(book));
-    for(i=0;i<bookarraysize;i++)
+    for(i=0;i<bookarraysize;i++)//loop gets maximum number of borrows in the library
     {
         if(books[i].borrows>max)
             max=books[i].borrows;
@@ -235,7 +246,7 @@ void most_popular_books(){
     {
         for(i=0;i<bookarraysize;i++)
         {
-            if(books[i].borrows==max){
+            if(books[i].borrows==max){//in case more than one book have same number of borrows
                 popular[popularcount]=books[i];
                 popularcount++;
                 }
@@ -243,7 +254,7 @@ void most_popular_books(){
                 break;
 
         }
-        max--;
+        max--;//decrement the max value to search for the less popular books
     }
 printf("Most Popular %d books: (popularcount is %d)\n",x,popularcount);
 for(j=0;j<popularcount;j++)
@@ -293,6 +304,7 @@ case 4:
     wait_for_it(1);
 }
 
+//searches for a particular ISBN of a book in the books array and returns its index
 int check_ISBN_in_books(char ISBN[])
 {
     int i=0,duplicate=0,x;
@@ -312,6 +324,9 @@ int check_ISBN_in_books(char ISBN[])
     }
     return -1;
 }
+
+
+//searches for a particular ISBN of a book in the borrows array and returns its index
 
 int check_ISBN_in_borrows(char ISBN[],char ID[])
 {
@@ -333,6 +348,8 @@ int check_ISBN_in_borrows(char ISBN[],char ID[])
             return -1;
 }
 
+//searches for a particular ID of a user in the members array and returns its index
+
 int check_ID(char ID[])
 {
     int i=0,duplicate=0,x;
@@ -353,7 +370,7 @@ int check_ID(char ID[])
     return -1;
 }
 
-
+//return book function
 void return_book(){
     int x,y,z;
     char ISBN[15];
@@ -377,7 +394,7 @@ void return_book(){
 }
 
 
-book *foundbks;//global found books array...will be malloced in main
+book *foundbks;//global found books array...will be malloc-ed in main
 
 
 void display_found(int n){
@@ -392,6 +409,7 @@ void display_found(int n){
     }
 }
 
+//struct copy function
 void book_struct_copy(int x,int y){
     strcpy(foundbks[x].Author,books[y].Author);
     strcpy(foundbks[x].Book_Title,books[y].Book_Title);
@@ -405,7 +423,7 @@ void book_struct_copy(int x,int y){
 
 
 }
-
+//Uppers the case of the first letter in each word in a string
 void capitalization(char*string,int n){
     int i;
     char cc;
@@ -421,6 +439,7 @@ void capitalization(char*string,int n){
     }
 
 }
+
 int search_by_title(){
     char key[50];
     char title[50];
@@ -442,7 +461,7 @@ int search_by_title(){
         }
 
     }
-    for(i=0;i<bookarraysize;i++)
+    for(i=0;i<bookarraysize;i++)//loop that compares the find key which each other word in the books' title in case the user inputs a part of the title only
     {
         int titlelen=strlen(books[i].Book_Title);
         strcpy(title,books[i].Book_Title);
@@ -636,7 +655,7 @@ void insert(){
      scanf("%[^\n]s",books[bookarraysize].publisher);
      printf("Please enter ISBN of book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].ISBN);
-     x=check_ISBN_in_books(books[bookarraysize].ISBN);
+     x=check_ISBN_in_books(books[bookarraysize].ISBN);//validates the uniqueness of the new book ISBN
      if(x!=-1)
      {
         printf("Same ISBN already exists for another registered book!!");
@@ -732,7 +751,7 @@ void register_(){
     scanf("%[^\n]",members[n].last_name);
     printf("Please enter member's ID: ");getchar();
     scanf("%[^\n]",ID);
-    x=check_ID(ID);
+    x=check_ID(ID);// check validation of the new ID added
     if(x==-1)
         strcpy(members[n].ID,ID);
     else{
@@ -756,6 +775,7 @@ void register_(){
     members[n].borrows=0;
     wait_for_it(2);
 }
+
 void remove_member (){
 int n=memberarraysize;
 int i;
@@ -890,7 +910,7 @@ void print_all(){
     c=wise_scan(1);
     switch (c){
     case '1':
-        sleep(0.5);
+        sleep(0.5);//sleep function pauses for an inputed period of time before continuing into the following line of code
         system("cls");
         print_books();
         break;
@@ -975,7 +995,8 @@ for(i=0;i<memberarraysize;i++){
 if (flag==1)
     printf("User ID is Valid.");
     else{
-            printf("Wrong ID");}
+            printf("Wrong ID");
+            wait_for_it(3);}
 
 
     if(members[index].borrows<4){
@@ -1105,6 +1126,7 @@ void main_menu(int way){
     printf("=============== Welcome to Library System ========================\n");
     red();
     background();
+    //goto(10,10);
 printf("1)Book management\n2)Member management\n3)Borrow management\n4)Administrative actions\n5)Print all data\n6)Save changes\n7)Exit\n");
 printf("Enter your choice: ");
 c=wise_scan(way);
@@ -1207,6 +1229,7 @@ case '4':
 }
 }
 
+//function that waits for an input from the user to direct him either back into the previous sub-menu or directly to the main menu upon getting special character 'm'
 void wait_for_it(int x){
     printf("((\nPress any key to return back\npress 'M' to return to main menu\n))");
     char c;
