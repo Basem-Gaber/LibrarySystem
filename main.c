@@ -104,6 +104,7 @@ void insert(); // insert a new book
 void add_new_copy();// adding new book copy
 void delete_book(); // deleting a book from the list
 void register_(); // registration of new member
+void Name_validation(char*name);// last and first name validation
 void phone_validation(char phone[]);// phone number validation
 void remove_member ();
 void savebook();// saving the changes in books array into file
