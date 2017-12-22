@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -68,31 +67,89 @@ int borrowarraysize;
 int bookarraysize;
 int memberarraysize;
 Date date_current;
+book *foundbks;//global found books array...will be malloc-ed in main
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// functions prototypes///////////////////////////////////////
+char wise_scan(int way);//wise scan function makes sure the user inputs an integer
+int read_books_file ();//reading books from the file and storing them in the array
+int read_members_file();//read members from file and store them in array
+int read_borrows_file();//read borrows from file and store them in array
+//date_comparison...compares year first .. then month .. then day
+int date_compare(Date d1, Date d2);
+//gets time programmatically
+void acquire_date_current();
+//checks for books whose due to return date has passed and wasn't returned using my date compare function
+void overdue_books();
+void display_overdue(int n);// display overdue books list
+//most popular books .. searches until popular count reaches 5
+void most_popular_books();
+void edit_book(); // editing the information of existing book
+//searches for a particular ISBN of a book in the books array and returns its index
+int check_ISBN_in_books(char ISBN[]);
+//searches for a particular ISBN of a book in the borrows array and returns its index
+int check_ISBN_in_borrows(char ISBN[],char ID[]);
+//searches for a particular ID of a user in the members array and returns its index
+int check_ID(char ID[]);
+void return_book();//return book after borrowing function
+void display_found(int n);// prints the target search information
+void book_struct_copy(int x,int y);//struct copy function
+//Uppers the case of the first letter in each word in a string
+void capitalization(char*string,int n);
+int search_by_title();// search by Book title or part of it function
+int search_by_author();
+int search_by_ISBN();
+int search_by_category();
+int search_for_a_book(int way);
+void insert(); // insert a new book
+void add_new_copy();// adding new book copy
+void delete_book(); // deleting a book from the list
+void register_(); // registration of new member
+void phone_validation(char phone[]);// phone number validation
+void remove_member ();
+void savebook();// saving the changes in books array into file
+void savemember();// saving the changes in members array into file
+void saveborrow();// saving the changes in Borrows array into file
+void print_books(); // print all books data in the books array
+void print_members();// print all members data in the members array
+void print_borrows();// print all members data in the members array
+void print_all();// printing administration function
+void borrow_book(char *ID);
+void check_member_books();//checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
+void savetotal(int way);// saves all the data in the 3 arrays into files
+void my_exit();// exiting function
+void bookmanagement();// managing the operations of books array
+void administrative();
+void main_menu(int way);// program's main menu
+void member_management();
+void borrow_management ();
+//function that waits for an input from the user to direct him either back into the previous sub-menu
+//or directly to the main menu upon getting special character 'm'
+void wait_for_it(int x);
 
 
-//wise scan function makes sure the user inputs an integer
-char wise_scan(int way){
-    char c;
-    int x;
-    if(way==1){
-    getchar();}
-    do
-    {
+int main()
 
-        printf("\nPlease enter a number from the list!!\n");
-        fflush(stdin);
-            scanf("%c",&c);
-            x=isdigit(c);
-    }while(x!=1);
-    return c;
+{
+    books=(book*)malloc(50*sizeof(book));
+    overdue=(borrow*)malloc(50*sizeof(borrow));
+    foundbks=(book*)malloc(50*sizeof(book));
+    members=(member*)malloc(50*sizeof(member));
+    borrows=(borrow*)malloc(50*sizeof(member));
+    int i,borrowsize=0,membersize=0,booksize=0;
+    borrowarraysize=read_borrows_file();
+    memberarraysize=read_members_file();
+    bookarraysize=read_books_file();
+    main_menu(2);
+    return 0;
 }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////books functions////////////////////////////////////////////////////////////////
 //reading books from the file and storing them in the array
 int read_books_file (){
     FILE* f;
     int i=0;
     f=fopen("books.txt","r");
-    if(f==NULL)
+    if(f==NULL) // checking the existence of the file
     {
         printf("Books text file doesn't exist!\n");
         exit(1);
@@ -108,165 +165,6 @@ int read_books_file (){
     fclose(f);
     return i;
 }
-
-//read members from file and store them in array
-int read_members_file(){
-    FILE* f;
-    int i=0;
-    f=fopen("members.txt","r");
-    if(f==NULL)
-    {
-        printf("Members text file doesn't exist!\n");
-        exit(2);
-    }
-    while(!feof(f))
-    {
-        fscanf(f,"%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%d",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
-                          ,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email,&members[i].borrows);
-        fscanf(f,"\n");
-        i++;
-    }
-    fclose(f);
-    return i;
-}
-
-//read borrows from file and store them in array
-int read_borrows_file(){
-    FILE* f;
-    int i=0;
-
-    f=fopen("borrows.txt","r");
-
-    if(f==NULL)
-    {
-        printf("Borrows file doesn't exist!\n");
-        exit(3);
-    }
-
-    while(!feof(f))
-    {
-        fscanf(f,"%[^,],%[^,],%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,&borrows[i].date_borrowed.day,&borrows[i].date_borrowed.month
-                    ,&borrows[i].date_borrowed.year,&borrows[i].date_due_to_return.day,&borrows[i].date_due_to_return.month
-                    ,&borrows[i].date_due_to_return.year,&borrows[i].date_returned.day,&borrows[i].date_returned.month,&borrows[i].date_returned.year);
-        fscanf(f,"\n");
-        i++;
-
-    }
-    fclose(f);
-
-    return i;
-}
-
-//date_comparison...compares year first .. then month .. then day
-int date_compare(Date d1,Date d2){
-    if(d1.year==0||d2.year==0)
-        return -1;
-    if(d1.year>d2.year)
-        return 1;
-    else if(d2.year>d1.year)
-        return 2;
-    else{
-        if(d2.month>d1.month)
-            return 2;
-        else if(d1.month>d2.month)
-            return 1;
-        else
-        {
-            if(d2.day>d1.day)
-                return 2;
-            else if(d1.day>d2.day)
-                return 1;
-            else
-                return 0;
-        }
-    }
-}
-
-//gets time programmatically
-void acquire_date_current(){
-    time_t date_current1=time(NULL);
-    struct tm tm=*localtime(&date_current1);
-    date_current.day=tm.tm_mday;
-    date_current.month=tm.tm_mon+1;//month numbered from 1 to 11 .. must add 1
-    date_current.year=tm.tm_year+1900;//function gets years since 1900 .. must add 1900 to get current year
-}
-
-//checks for books whose due to return date has passed and wasn't returned using my date compare function
-void overdue_books(){
-int i=0,x,y,overcount=0;
-acquire_date_current();
-
-for(i=0;i<borrowarraysize;i++)
-{
-    x=date_compare(borrows[i].date_due_to_return,date_current);
-    y=date_compare(borrows[i].date_due_to_return,borrows[i].date_returned);
-
-    if(x==2&&y!=2)
-    {
-        overdue[overcount]=borrows[i];
-        overcount++;
-    }
-}
-
-display_overdue(overcount);
-}
-
-void display_overdue(int n){
-    int i;
-    if(n>0){
-    printf("List of Overdue books: \n");
-    for(i=0;i<n;i++)
-    {
-    printf("%d)%s,%s,%d-%d-%d,%d/%d/%d,%d/%d/%d\n",i+1,overdue[i].borrowed_ISBN,overdue[i].user_i,overdue[i].date_borrowed.day,overdue[i].date_borrowed.month
-                    ,overdue[i].date_borrowed.year,overdue[i].date_due_to_return.day,overdue[i].date_due_to_return.month
-                    ,overdue[i].date_due_to_return.year,overdue[i].date_returned.day,overdue[i].date_returned.month,overdue[i].date_returned.year);
-
-}
-    }
-    else
-        printf("No overdue books!!");
-wait_for_it(4);
-}
-
-book*popular;
-
-//most popular books .. searches until popular count reaches 5
-void most_popular_books(){
-    int i,j,max=0,popularcount=0;
-    popular=(book*)malloc(5*sizeof(book));
-    for(i=0;i<bookarraysize;i++)//loop gets maximum number of borrows in the library
-    {
-        if(books[i].borrows>max)
-            max=books[i].borrows;
-    }
-    int x=5;
-    if (bookarraysize<5)
-        x=bookarraysize;
-    while(popularcount!=x)
-    {
-        for(i=0;i<bookarraysize;i++)
-        {
-            if(books[i].borrows==max){//in case more than one book have same number of borrows
-                popular[popularcount]=books[i];
-                popularcount++;
-                }
-            if(popularcount==5)
-                break;
-
-        }
-        max--;//decrement the max value to search for the less popular books
-    }
-printf("Most Popular %d books: (popularcount is %d)\n",x,popularcount);
-for(j=0;j<popularcount;j++)
-{
-    printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",j+1,popular[j].Book_Title,popular[j].Author,popular[j].publisher,popular[j].ISBN,
-           popular[j].DateOfPuplication.day,popular[j].DateOfPuplication.month,popular[j].DateOfPuplication.year,popular[j].number_of_copies,
-           popular[j].current_available_number_of_copies,popular[j].category,popular[j].borrows);
-}
-wait_for_it(4);
-}
-
-
 void edit_book(){
     int i,x=0,y=0,bookindex=0;
     char ISBN[15],newdata[50];
@@ -280,9 +178,13 @@ void edit_book(){
             bookindex=i;
             break;
         }
-
+else {printf("THIS ISBN IS NOT EXISTS!");
+    bookindex=-1;
+     wait_for_it(1);
+}
     }
-    printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
+    if (bookindex!=-1)
+    {printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
     scanf("%d",&y);
     printf("Please enter the new data you wish to insert:\n");
     getchar();
@@ -301,9 +203,8 @@ case 4:
     strcpy(books[bookindex].publisher,newdata);
     break;
     }
-    wait_for_it(1);
+    wait_for_it(1);}
 }
-
 //searches for a particular ISBN of a book in the books array and returns its index
 int check_ISBN_in_books(char ISBN[])
 {
@@ -324,107 +225,9 @@ int check_ISBN_in_books(char ISBN[])
     }
     return -1;
 }
-
-
-//searches for a particular ISBN of a book in the borrows array and returns its index
-
-int check_ISBN_in_borrows(char ISBN[],char ID[])
-{
-    int i=0,duplicate=0,x,y;
-    for(i=0;i<borrowarraysize;i++)
-    {
-        x=strcmp(ISBN,borrows[i].borrowed_ISBN);
-        if(x==0)
-        {
-            y=strcmp(ID,borrows[i].user_i);
-            if(y==0){
-                duplicate=1;
-                break;}
-        }
-    }
-        if(duplicate==1)
-        return i;
-        else
-            return -1;
-}
-
-//searches for a particular ID of a user in the members array and returns its index
-
-int check_ID(char ID[])
-{
-    int i=0,duplicate=0,x;
-    for(i=0;i<memberarraysize;i++)
-    {
-        x=strcmp(ID,members[i].ID);
-        if(x==0)
-        {
-            duplicate=1;
-            break;
-        }
-    }
-    if(duplicate==1)
-    {
-        //printf("Same ID already exists for another member!!");
-        return i;
-    }
-    return -1;
-}
-
-//return book function
-void return_book(){
-    int x,y,z;
-    char ISBN[15];
-    char ID[10];
-    printf("Please enter the ID of the user returning the book:\n");
-    scanf("%s",ID);
-    printf("Please enter the ISBN of the returned book: \n");
-    scanf("%s",ISBN);
-    x=check_ISBN_in_borrows(ISBN,ID);
-    acquire_date_current();
-    borrows[x].date_returned=date_current;
-    y=check_ISBN_in_books(ISBN);
-    books[y].current_available_number_of_copies++;
-    books[y].borrows--;
-    z=check_ID(ID);
-    members[z].borrows--;
-    printf("Book returned!");
-    wait_for_it(3);
-
-
-}
-
-
-book *foundbks;//global found books array...will be malloc-ed in main
-
-
-void display_found(int n){
-    int i;
-    char c;
-    printf("Search Results:\n");
-    for(i=0;i<n;i++)
-    {
-        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,foundbks[i].Book_Title,foundbks[i].Author,foundbks[i].publisher,foundbks[i].ISBN
-               ,foundbks[i].DateOfPuplication.day,foundbks[i].DateOfPuplication.month,foundbks[i].DateOfPuplication.year
-               ,foundbks[i].number_of_copies,foundbks[i].current_available_number_of_copies,foundbks[i].category,&foundbks[i].borrows);
-    }
-}
-
-//struct copy function
-void book_struct_copy(int x,int y){
-    strcpy(foundbks[x].Author,books[y].Author);
-    strcpy(foundbks[x].Book_Title,books[y].Book_Title);
-    strcpy(foundbks[x].category,books[y].category);
-    foundbks[x].current_available_number_of_copies=books[y].current_available_number_of_copies;
-    foundbks[x].DateOfPuplication=books[y].DateOfPuplication;
-    strcpy(foundbks[x].ISBN,books[y].ISBN);
-    foundbks[x].number_of_copies=books[y].number_of_copies;
-    strcpy(foundbks[x].publisher,books[y].publisher);
-    foundbks[x].borrows=books[y].borrows;
-
-
-}
 //Uppers the case of the first letter in each word in a string
-void capitalization(char*string,int n){
+void capitalization(char*string,int n)// takes array and its size
+{
     int i;
     char cc;
     cc=toupper(string[0]);
@@ -439,18 +242,42 @@ void capitalization(char*string,int n){
     }
 
 }
+int search_for_a_book(int way){
+    printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\nChoice(1-2-3-4)?\n");
+    int x,y;
+    char c='n';
+    scanf("%d",&x);
+    switch (x){
+case 1:
+    y=search_by_title();
+    break;
+case 2:
+    y=search_by_author();
+    break;
+case 3:
+    y=search_by_ISBN();
+    break;
+case 4:
+    y=search_by_category();
+    break;
+    }
+    if (way==1)
+    wait_for_it(1);
+    if (way==2)
+        return y;
+}
 
 int search_by_title(){
-    char key[50];
+    char key[50]; // the target of the search
     char title[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     printf("Please enter the title of the book: \n");
     getchar();
-    scanf("%[^\n]",key);
+    scanf("%[^\n]",key); // scanning the target title for search
     int i,j,k,l,x=0,titlelen=0,keylen=0,found=0,not_duplicate=1;
     keylen=strlen(key);
-    capitalization(key,keylen);
+    capitalization(key,keylen); // capitalize the first letter of the target title
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].Book_Title,key);
@@ -616,33 +443,9 @@ int search_by_category(){
         return foundcount;
 }
 
-int search_for_a_book(int way){
-    printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\nChoice(1-2-3-4)?\n");
-    int x,y;
-    char c='n';
-    scanf("%d",&x);
-    switch (x){
-case 1:
-    y=search_by_title();
-    break;
-case 2:
-    y=search_by_author();
-    break;
-case 3:
-    y=search_by_ISBN();
-    break;
-case 4:
-    y=search_by_category();
-    break;
-    }
-    if (way==1)
-    wait_for_it(1);
-    if (way==2)
-        return y;
-}
 
 void insert(){
-    char ISBN[15];
+    char ISBN[18];
     int x;
 
      printf("Enter information of the new book\n");
@@ -653,8 +456,16 @@ void insert(){
      scanf("%[^\n]s",books[bookarraysize].Author);
      printf("Please enter publisher of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].publisher);
-     printf("Please enter ISBN of book: ");getchar();
-     scanf("%[^\n]s",books[bookarraysize].ISBN);
+     printf("Please enter ISBN of book: (as 978-3-16-148410-0)\n");
+     scanf("%s",ISBN);
+     if (strlen(ISBN)!=17 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-')
+     do
+     {
+         printf("WRONG ISBN FORMAT\nPlease enter ISBN of book: (as 978-3-16-148410-0)\n");
+         scanf("%s",ISBN);
+     } while (strlen(ISBN)!=17 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-');
+    strcpy(books[bookarraysize].ISBN,ISBN);
+
      x=check_ISBN_in_books(books[bookarraysize].ISBN);//validates the uniqueness of the new book ISBN
      if(x!=-1)
      {
@@ -662,8 +473,10 @@ void insert(){
         printf("Please enter ISBN of book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].ISBN);}
 
-     printf("Please enter date of publication:(day month year) ");
-     scanf("%d%d%d",&books[bookarraysize].DateOfPuplication.day,&books[bookarraysize].DateOfPuplication.month,&books[bookarraysize].DateOfPuplication.year);
+    do { printf("Please enter date of publication:(day month year) ");
+     scanf("%d%d%d",&books[bookarraysize].DateOfPuplication.day,&books[bookarraysize].DateOfPuplication.month,&books[bookarraysize].DateOfPuplication.year);}
+     while ((books[bookarraysize].DateOfPuplication.day>31 || books[bookarraysize].DateOfPuplication.day<1)|| (books[bookarraysize].DateOfPuplication.month>12 || books[bookarraysize].DateOfPuplication.month<1)
+          || (books[bookarraysize].DateOfPuplication.year>2018 || books[bookarraysize].DateOfPuplication.year < 1600));
       printf("Please enter number of copies: ");getchar();
      scanf("%d",&books[bookarraysize].number_of_copies);
      books[bookarraysize].current_available_number_of_copies=books[bookarraysize].number_of_copies;
@@ -698,7 +511,6 @@ void insert(){
     printf("Book wasn't found!!");
    wait_for_it(1);
    }
-
 void delete_book(){
     char ISBN[18];
     int found=0,pos,i;
@@ -739,16 +551,197 @@ void delete_book(){
 else printf("BOOK NOT FOUND\n");
 wait_for_it(1);
 }
+// saving the changes from the books array to books file
+void savebook()
+{
+    FILE *fbook;
+    int i;
+    fbook=fopen("books.txt","w");
+    if (fbook!=NULL)
+    {
+        for (i=0;i< bookarraysize ; i++ )
+        {
+            fprintf(fbook,"%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
+                        ,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year
+                        ,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
+        }
 
+    }
+    fclose(fbook);
+
+}
+// prints all data in books array
+void print_books(){
+    int n=bookarraysize;
+    int i;
+    printf("Book Title,Author,Publisher,ISBN,Date of Publication,Number of copies,Current Available,Category,Borrows\n");
+    for(i=0;i<n;i++)
+    {
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
+           books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,
+           books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
+    }
+    wait_for_it(5);
+}
+//struct copy function
+void book_struct_copy(int x,int y){
+    strcpy(foundbks[x].Author,books[y].Author);
+    strcpy(foundbks[x].Book_Title,books[y].Book_Title);
+    strcpy(foundbks[x].category,books[y].category);
+    foundbks[x].current_available_number_of_copies=books[y].current_available_number_of_copies;
+    foundbks[x].DateOfPuplication=books[y].DateOfPuplication;
+    strcpy(foundbks[x].ISBN,books[y].ISBN);
+    foundbks[x].number_of_copies=books[y].number_of_copies;
+    strcpy(foundbks[x].publisher,books[y].publisher);
+    foundbks[x].borrows=books[y].borrows;
+
+
+}
+void display_found(int n){
+    int i;
+    char c;
+    printf("Search Results:\n");
+    for(i=0;i<n;i++)
+    {
+        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,foundbks[i].Book_Title,foundbks[i].Author,foundbks[i].publisher,foundbks[i].ISBN
+               ,foundbks[i].DateOfPuplication.day,foundbks[i].DateOfPuplication.month,foundbks[i].DateOfPuplication.year
+               ,foundbks[i].number_of_copies,foundbks[i].current_available_number_of_copies,foundbks[i].category,&foundbks[i].borrows);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////members functions///////////////////////////////////////////////////////////////////
+//read members from file and store them in array
+int read_members_file(){
+    FILE* f;
+    int i=0;
+    f=fopen("members.txt","r");
+    if(f==NULL)
+    {
+        printf("Members text file doesn't exist!\n");
+        exit(2);
+    }
+    while(!feof(f))
+    {
+        fscanf(f,"%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%d",members[i].last_name,members[i].first_name,members[i].ID,members[i].member_address.building,members[i].member_address.street,members[i].member_address.city
+                          ,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email,&members[i].borrows);
+        fscanf(f,"\n");
+        i++;
+    }
+    fclose(f);
+    return i;
+}
+//searches for a particular ID of a user in the members array and returns its index
+
+int check_ID(char ID[])
+{
+    int i=0,duplicate=0,x;
+    for(i=0;i<memberarraysize;i++)
+    {
+        x=strcmp(ID,members[i].ID);
+        if(x==0)
+        {
+            duplicate=1;
+            break;
+        }
+    }
+    if(duplicate==1)
+    {
+        //printf("Same ID already exists for another member!!");
+        return i;
+    }
+    return -1;
+}
+void phone_validation(char phone[])
+{ int i=0;
+     scanf("%s",phone);
+     while (phone[i]!='\0')
+     {
+         if (phone[i] !='0'&& phone[i] !='1'&&phone[i] !='2'&&phone[i] !='3'&&phone[i] !='4'&&phone[i] !='5'&&phone[i] !='6'
+             &&phone[i] !='7'&&phone[i] !='8'&& phone[i] !='9')
+ {
+              printf("Please Enter numbers only\n");
+                        scanf("%s",phone);
+          }
+
+    i++;
+     }
+    if (strlen(phone)!=11 || phone[0]!='0' || phone[1]!='1' || (phone[2]!='1' &&phone[2]!='2' &&phone[2]!='0' &&
+                                         phone[2]!='5'))
+   {
+
+    do {  printf("Wrong Number Format\nPlease enter member's phone number: ");
+            scanf("%s",phone);
+            i=0;
+            while (phone[i]!='\0')
+     {
+         if (phone[i] !='0'&& phone[i] !='1'&&phone[i] !='2'&&phone[i] !='3'&&phone[i] !='4'&&phone[i] !='5'&&phone[i] !='6'
+             &&phone[i] !='7'&&phone[i] !='8'&& phone[i] !='9')
+ {
+              printf("Please Enter numbers only\n");
+                        scanf("%s",phone);
+          }
+
+    i++;
+     }
+            }
+    while (strlen(phone)!=11 || phone[0]!='0' || phone[1]!='1' || (phone[2]!='1' &&phone[2]!='2' &&phone[2]!='0' &&
+                                                                    phone[2]!='5'));
+                                                                    }}
+ void Name_validation(char*name)
+ {
+      int i=0;
+  scanf("%s",name);
+     while (name[i]!='\0')
+     {
+         if (name[i] =='0'|| name[i] =='1'||name[i] =='2'||name[i] =='3'||name[i] =='4'||name[i] =='5'||name[i] =='6'
+             ||name[i] =='7'||name[i] =='8'|| name[i] =='9')
+ {
+              printf("Wrong Entry\nPlease Enter The right Name format: ");
+                        scanf("%s",name);
+          }
+
+    i++;
+     }
+     if (strlen(name)>50)
+     {
+         do { printf("Wrong Entry\nPlease Enter The right Name format: ");
+         scanf("%s",name);
+         int i=0;
+
+     while (name[i]!='\0')
+     {
+         if (name[i] =='0'|| name[i] =='1'||name[i] =='2'||name[i] =='3'||name[i] =='4'||name[i] =='5'||name[i] =='6'
+             ||name[i] =='7'||name[i] =='8'|| name[i] =='9')
+ {
+              printf("Wrong Entry\nPlease Enter The right Name format:");
+                        scanf("%s",name);
+          }
+
+    i++;
+     }
+         }while (strlen(name)>50);
+     }
+
+ }
+// registration of a new member function
 void register_(){
     int n;
     char ID[10];
+    char phone[12];
+    char building[4];
+    char *firstName=(char*)malloc(50*sizeof(char));
+    char *lastName=(char*)malloc(50*sizeof(char));
     int x;
     n=memberarraysize++;
-    printf("Please enter member's first name: ");getchar();
-    scanf("%[^\n]",members[n].first_name);
-    printf("Please enter member's last name: ");getchar();
+    printf("Please enter member's first name: ");
+    Name_validation(firstName);
+    strcpy(members[n].first_name,firstName);
+    printf("Please enter member's last name: ");
+    Name_validation(lastName);
+    strcpy(members[n].last_name,lastName);
     scanf("%[^\n]",members[n].last_name);
+
     printf("Please enter member's ID: ");getchar();
     scanf("%[^\n]",ID);
     x=check_ID(ID);// check validation of the new ID added
@@ -760,14 +753,48 @@ void register_(){
     scanf("%[^\n]",ID);
     }
     printf("Please enter member's address:\n");
-    printf("building: ");getchar();
-    scanf("%[^\n]",members[n].member_address.building);
+    printf("building: ");
+    scanf("%s",building);
+  int i=0; // building validation
+
+     while (building[i]!='\0')
+     {
+         if (building[i] !='0'&& building[i] !='1'&&building[i] !='2'&&building[i] !='3'&&building[i] !='4'&&building[i] !='5'&&building[i] !='6'
+             &&building[i] !='7'&&building[i] !='8'&& building[i] !='9')
+ {
+              printf("Please Enter the Building number only\n");
+                        scanf("%s",building);
+          }
+
+    i++;
+     }
+     if (strlen(building)>3)
+     {
+         do { printf("WRONG BUILDING NUMBER\nbuilding: ");
+         scanf("%s",building);
+         int i=0;
+
+     while (building[i]!='\0')
+     {
+         if (building[i] !='0'&& building[i] !='1'&&building[i] !='2'&&building[i] !='3'&&building[i] !='4'&&building[i] !='5'&&building[i] !='6'
+             &&building[i] !='7'&&building[i] !='8'&& building[i] !='9')
+ {
+              printf("Please Enter the Building number only\n");
+                        scanf("%s",building);
+          }
+
+    i++;
+     }
+         }while (strlen(building)>3);
+     }
+    strcpy(members[n].member_address.building,building);
     printf("\nstreet: ");getchar();
     scanf("%[^\n]",members[n].member_address.street);
     printf("\ncity: ");getchar();
     scanf("%[^\n]",members[n].member_address.city);
-    printf("Please enter member's phone number: ");getchar();
-    scanf("%[^\n]",members[n].member_Phone_Number);
+    printf("Please enter member's phone number: ");
+    phone_validation(phone);
+    strcpy(members[n].member_Phone_Number, phone );
     printf("Please enter member's age: ");getchar();
     scanf("%[^\n]",&members[n].member_age);
     printf("Please enter member's e-mail: ");getchar();
@@ -807,24 +834,7 @@ wait_for_it(2);
 
 }
 
-void savebook()
-{
-    FILE *fbook;
-    int i;
-    fbook=fopen("books.txt","w");
-    if (fbook!=NULL)
-    {
-        for (i=0;i< bookarraysize ; i++ )
-        {
-            fprintf(fbook,"%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN
-                        ,books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year
-                        ,books[i].number_of_copies,books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
-        }
-
-    }
-    fclose(fbook);
-
-}
+// saving the changes from the members array to members file
 void savemember()
 {
     FILE *fmember;
@@ -842,6 +852,207 @@ void savemember()
     fclose(fmember);
 
 }
+// prints all data in members array
+void print_members(){
+    int n=memberarraysize;
+    int i;
+    printf("First Name,Last Name,ID,Address,Phone Number,Age,E-mail,Borrows\n");
+    for(i=0;i<n;i++)
+    {
+        printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
+               ,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email
+               ,members[i].borrows);
+    }
+    wait_for_it(5);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////borrows functions//////////////////////////////////////////////////////////////////////////////
+//read borrows from file and store them in array
+int read_borrows_file(){
+    FILE* f;
+    int i=0;
+
+    f=fopen("borrows.txt","r");
+
+    if(f==NULL)
+    {
+        printf("Borrows file doesn't exist!\n");
+        exit(3);
+    }
+
+    while(!feof(f))
+    {
+        fscanf(f,"%[^,],%[^,],%d/%d/%d,%d/%d/%d,%d/%d/%d",borrows[i].borrowed_ISBN,borrows[i].user_i,&borrows[i].date_borrowed.day,&borrows[i].date_borrowed.month
+                    ,&borrows[i].date_borrowed.year,&borrows[i].date_due_to_return.day,&borrows[i].date_due_to_return.month
+                    ,&borrows[i].date_due_to_return.year,&borrows[i].date_returned.day,&borrows[i].date_returned.month,&borrows[i].date_returned.year);
+        fscanf(f,"\n");
+        i++;
+
+    }
+    fclose(f);
+
+    return i;
+}
+
+
+//gets time programmatically
+void acquire_date_current(){
+    time_t date_current1=time(NULL);
+    struct tm tm=*localtime(&date_current1);
+    date_current.day=tm.tm_mday;
+    date_current.month=tm.tm_mon+1;//month numbered from 1 to 11 .. must add 1
+    date_current.year=tm.tm_year+1900;//function gets years since 1900 .. must add 1900 to get current year
+}
+//date_comparison...compares year first .. then month .. then day
+int date_compare(Date d1, Date d2){
+    if(d1.year==0||d2.year==0)
+        return -1;
+    if(d1.year>d2.year)
+        return 1;
+    else if(d2.year>d1.year)
+        return 2;
+    else{
+        if(d2.month>d1.month)
+            return 2;
+        else if(d1.month>d2.month)
+            return 1;
+        else
+        {
+            if(d2.day>d1.day)
+                return 2;
+            else if(d1.day>d2.day)
+                return 1;
+            else
+                return 0;
+        }
+    }
+}
+
+//checks for books whose due to return date has passed and wasn't returned using my date compare function
+void overdue_books(){
+int i=0,x,y,overcount=0;
+acquire_date_current();
+
+for(i=0;i<borrowarraysize;i++)
+{
+    x=date_compare(borrows[i].date_due_to_return,date_current);
+    y=date_compare(borrows[i].date_due_to_return,borrows[i].date_returned);
+
+    if(x==2&&y!=2)
+    {
+        overdue[overcount]=borrows[i];
+        overcount++;
+    }
+}
+
+display_overdue(overcount);
+}
+
+void display_overdue(int n){
+    int i;
+    if(n>0){
+    printf("List of Overdue books: \n");
+    for(i=0;i<n;i++)
+    {
+    printf("%d)%s,%s,%d-%d-%d,%d/%d/%d,%d/%d/%d\n",i+1,overdue[i].borrowed_ISBN,overdue[i].user_i,overdue[i].date_borrowed.day,overdue[i].date_borrowed.month
+                    ,overdue[i].date_borrowed.year,overdue[i].date_due_to_return.day,overdue[i].date_due_to_return.month
+                    ,overdue[i].date_due_to_return.year,overdue[i].date_returned.day,overdue[i].date_returned.month,overdue[i].date_returned.year);
+
+}
+    }
+    else
+        printf("No overdue books!!");
+wait_for_it(4);
+}
+
+book*popular;
+
+//most popular books .. searches until popular count reaches 5
+void most_popular_books(){
+    int i,j,max=0,popularcount=0;i;
+    popular=(book*)malloc(5*sizeof(book));
+    for(i=0;i<bookarraysize;i++)//loop gets maximum number of borrows in the library
+    {
+        if(books[i].borrows>max)
+            max=books[i].borrows;
+    }
+    int x=5;
+    if (bookarraysize<5)
+        x=bookarraysize;
+    while(popularcount!=x)
+    {
+        for(i=0;i<bookarraysize;i++)
+        {
+            if(books[i].borrows==max){//in case more than one book have same number of borrows
+                popular[popularcount]=books[i];
+                popularcount++;
+                }
+            if(popularcount==5)
+                break;
+
+        }
+        max--;//decrement the max value to search for the less popular books
+    }
+printf("Most Popular %d books: (popularcount is %d)\n",x,popularcount);
+for(j=0;j<popularcount;j++)
+{
+    printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",j+1,popular[j].Book_Title,popular[j].Author,popular[j].publisher,popular[j].ISBN,
+           popular[j].DateOfPuplication.day,popular[j].DateOfPuplication.month,popular[j].DateOfPuplication.year,popular[j].number_of_copies,
+           popular[j].current_available_number_of_copies,popular[j].category,popular[j].borrows);
+}
+wait_for_it(4);
+}
+
+
+//searches for a particular ISBN of a book in the borrows array and returns its index
+int check_ISBN_in_borrows(char ISBN[],char ID[])
+{
+    int i=0,duplicate=0,x,y;
+    for(i=0;i<borrowarraysize;i++)
+    {
+        x=strcmp(ISBN,borrows[i].borrowed_ISBN);
+        if(x==0)
+        {
+            y=strcmp(ID,borrows[i].user_i);
+            if(y==0){
+                duplicate=1;
+                break;}
+        }
+    }
+        if(duplicate==1)
+        return i;
+        else
+            return -1;
+}
+
+
+
+//return book function
+void return_book(){
+    int x,y,z;
+    char ISBN[15];
+    char ID[10];
+    printf("Please enter the ID of the user returning the book:\n");
+    scanf("%s",ID);
+    printf("Please enter the ISBN of the returned book: \n");
+    scanf("%s",ISBN);
+    x=check_ISBN_in_borrows(ISBN,ID);
+    acquire_date_current();
+    borrows[x].date_returned=date_current;
+    y=check_ISBN_in_books(ISBN);
+    books[y].current_available_number_of_copies++;
+    books[y].borrows--;
+    z=check_ID(ID);
+    members[z].borrows--;
+    printf("Book returned!");
+    sleep(5);
+    wait_for_it(3);
+
+
+}
+
+// saving the changes from the borrows array to borrows file
 void saveborrow()
 {
     FILE *fborrow;
@@ -860,32 +1071,8 @@ void saveborrow()
     fclose(fborrow);
 
 }
-void print_books(){
-    int n=bookarraysize;
-    int i;
-    printf("Book Title,Author,Publisher,ISBN,Date of Publication,Number of copies,Current Available,Category,Borrows\n");
-    for(i=0;i<n;i++)
-    {
-        printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,books[i].Book_Title,books[i].Author,books[i].publisher,books[i].ISBN,
-           books[i].DateOfPuplication.day,books[i].DateOfPuplication.month,books[i].DateOfPuplication.year,books[i].number_of_copies,
-           books[i].current_available_number_of_copies,books[i].category,books[i].borrows);
-    }
-    wait_for_it(5);
-}
 
-void print_members(){
-    int n=memberarraysize;
-    int i;
-    printf("First Name,Last Name,ID,Address,Phone Number,Age,E-mail,Borrows\n");
-    for(i=0;i<n;i++)
-    {
-        printf("%d)%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n",i+1,members[i].first_name,members[i].last_name,members[i].ID,members[i].member_address.building
-               ,members[i].member_address.street,members[i].member_address.city,members[i].member_Phone_Number,members[i].member_age,members[i].member_Email
-               ,members[i].borrows);
-    }
-    wait_for_it(5);
-}
-
+// prints all data in borrows array
 void print_borrows(){
     int n=borrowarraysize;
     int i;
@@ -898,46 +1085,6 @@ void print_borrows(){
     }
     wait_for_it(5);
 }
-
-
-
-void print_all(){
-    int x;
-//red();
-    printf("((1)Print all books\n2)Print all members\n3)Print all borrows\n4)Save changes\n5)Back to main menu\n))");
-    printf("Enter your choice");
-    char c;
-    c=wise_scan(1);
-    switch (c){
-    case '1':
-        sleep(0.5);//sleep function pauses for an inputed period of time before continuing into the following line of code
-        system("cls");
-        print_books();
-        break;
-    case '2':
-        sleep(0.5);
-        system("cls");
-        print_members();
-        break;
-    case '3':
-        sleep(0.5);
-        system("cls");
-        print_borrows();
-        break;
-    case '4':
-        sleep(0.5);
-    system("cls");
-    savetotal();
-    break;
-    case '5':
-        sleep(0.5);
-        system("cls");
-        main_menu(1);
-        break;
-    }
-
-}
-
 void borrow_book(char *ID){
     int k;
     int x;
@@ -978,6 +1125,65 @@ void borrow_book(char *ID){
 }
     wait_for_it(3);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////managing functions/////////////////////////////////////////////////////////////
+//wise scan function makes sure the user inputs an integer
+char wise_scan(int way){
+    char c;
+    int x;
+    if(way==1){
+    getchar();}
+    do
+    {
+
+        printf("\nPlease enter a number from the list!!\n");
+        fflush(stdin);
+            scanf("%c",&c);
+            x=isdigit(c);
+    }while(x!=1);
+    return c;
+}
+
+// printing arrays data administration function
+void print_all(){
+    int x;
+//red();
+    printf("((1)Print all books\n2)Print all members\n3)Print all borrows\n4)Save changes\n5)Back to main menu\n))");
+    printf("Enter your choice");
+    char c;
+    c=wise_scan(1);
+    switch (c){
+    case '1':
+        sleep(0.5);//sleep function pauses for an inputed period of time before continuing into the following line of code
+        system("cls");
+        print_books();
+        break;
+    case '2':
+        sleep(0.5);
+        system("cls");
+        print_members();
+        break;
+    case '3':
+        sleep(0.5);
+        system("cls");
+        print_borrows();
+        break;
+    case '4':
+        sleep(0.5);
+    system("cls");
+    savetotal(1);
+    break;
+    case '5':
+        sleep(0.5);
+        system("cls");
+        main_menu(1);
+        break;
+    }
+
+}
+
+//checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
 void check_member_books(){
     char ID[9];
     int flag=0;
@@ -1043,8 +1249,7 @@ else
 
      }
 
-
-
+// managing the available operations of books array
 void bookmanagement(){
     int x,y;
 printf("1)Insert a new book\n2)Search for a book\n3)Add a new copy\n4)Delete a book\n5)Edit a book\n6)Save changes\n7)Return to main menu\n");
@@ -1259,19 +1464,3 @@ case 5:
     }
     }
 }
-
-int main()
-{
-    books=(book*)malloc(50*sizeof(book));
-    overdue=(borrow*)malloc(50*sizeof(borrow));
-    foundbks=(book*)malloc(50*sizeof(book));
-    members=(member*)malloc(50*sizeof(member));
-    borrows=(borrow*)malloc(50*sizeof(member));
-    int i,borrowsize=0,membersize=0,booksize=0;
-    borrowarraysize=read_borrows_file();
-    memberarraysize=read_members_file();
-    bookarraysize=read_books_file();
-    main_menu(2);
-    return 0;
-}
-
