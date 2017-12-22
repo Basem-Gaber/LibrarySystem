@@ -1312,7 +1312,8 @@ void main_menu(int way){
     printf("=============== Welcome to Library System ========================\n");
     red();
     background();
-    most_popular_books(1);
+  if(way==2){
+    most_popular_books(1);}
     //goto(10,10);
     printf("\n\n^^^^System Management^^^^\n");
 printf("1)Book management\n2)Member management\n3)Borrow management\n4)Administrative actions\n5)Print all data\n6)Save changes\n7)Exit\n");
