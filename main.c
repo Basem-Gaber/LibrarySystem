@@ -67,63 +67,64 @@ int borrowarraysize;
 int bookarraysize;
 int memberarraysize;
 Date date_current;
-book *foundbks;//global found books array...will be malloc-ed in main
+book *foundbks;
+book*popular;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// functions prototypes///////////////////////////////////////
-char wise_scan(int way);//wise scan function makes sure the user inputs an integer
-int read_books_file ();//reading books from the file and storing them in the array
-int read_members_file();//read members from file and store them in array
-int read_borrows_file();//read borrows from file and store them in array
-//date_comparison...compares year first .. then month .. then day
+char wise_scan(int way);//f1)wise scan function makes sure the user inputs an integer
+int read_books_file ();//f2)reading books from the file and storing them in the array
+int read_members_file();//f3)read members from file and store them in array
+int read_borrows_file();//f4)read borrows from file and store them in array
+//f5)date_comparison...compares year first .. then month .. then day
 int date_compare(Date d1, Date d2);
-//gets time programmatically
+//f6)gets time programmatically
 void acquire_date_current();
-//checks for books whose due to return date has passed and wasn't returned using my date compare function
+//f7)checks for books whose due to return date has passed and wasn't returned using my date compare function
 void overdue_books();
-void display_overdue(int n);// display overdue books list
-//most popular books .. searches until popular count reaches 5
-void most_popular_books();
-void edit_book(); // editing the information of existing book
-//searches for a particular ISBN of a book in the books array and returns its index
+void display_overdue(int n);//f8) display overdue books list
+//f9)most popular books .. searches until popular count reaches 5
+void most_popular_books(int way);
+void edit_book(); //f10) editing the information of existing book
+//f11)searches for a particular ISBN of a book in the books array and returns its index
 int check_ISBN_in_books(char ISBN[]);
-//searches for a particular ISBN of a book in the borrows array and returns its index
+//f12)searches for a particular ISBN of a book in the borrows array and returns its index
 int check_ISBN_in_borrows(char ISBN[],char ID[]);
-//searches for a particular ID of a user in the members array and returns its index
+//f13)searches for a particular ID of a user in the members array and returns its index
 int check_ID(char ID[]);
-void return_book();//return book after borrowing function
-void display_found(int n);// prints the target search information
-void book_struct_copy(int x,int y);//struct copy function
-//Uppers the case of the first letter in each word in a string
+void return_book();//f14)return book after borrowing function
+void display_found(int n);//f15) prints the target search information
+void book_struct_copy(int x,int y);//f16)struct copy function
+//f17)Uppers the case of the first letter in each word in a string
 void capitalization(char*string,int n);
-int search_by_title();// search by Book title or part of it function
-int search_by_author();
-int search_by_ISBN();
-int search_by_category();
-int search_for_a_book(int way);
-void insert(); // insert a new book
-void add_new_copy();// adding new book copy
-void delete_book(); // deleting a book from the list
-void register_(); // registration of new member
-void Name_validation(char*name);// last and first name validation
-void phone_validation(char phone[]);// phone number validation
-void remove_member ();
-void savebook();// saving the changes in books array into file
-void savemember();// saving the changes in members array into file
-void saveborrow();// saving the changes in Borrows array into file
-void print_books(); // print all books data in the books array
-void print_members();// print all members data in the members array
-void print_borrows();// print all members data in the members array
-void print_all();// printing administration function
-void borrow_book(char *ID);
-void check_member_books();//checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
-void savetotal(int way);// saves all the data in the 3 arrays into files
-void my_exit();// exiting function
-void bookmanagement();// managing the operations of books array
-void administrative();
-void main_menu(int way);// program's main menu
-void member_management();
-void borrow_management ();
-//function that waits for an input from the user to direct him either back into the previous sub-menu
+int search_by_title();//f18) search by Book title or part of it function
+int search_by_author();//f19)
+int search_by_ISBN();//f20)
+int search_by_category();//f21)
+int search_for_a_book(int way);//f22)
+void insert(); //f23) insert a new book
+void add_new_copy();//f24) adding new book copy
+void delete_book(); //f25) deleting a book from the list
+void register_(); //f26) registration of new member
+void Name_validation(char*name);//f27) last and first name validation
+void phone_validation(char phone[]);//f28) phone number validation
+void remove_member ();//f29)
+void savebook();//f30) saving the changes in books array into file
+void savemember();//f31) saving the changes in members array into file
+void saveborrow();//f32) saving the changes in Borrows array into file
+void print_books(); //f33) print all books data in the books array
+void print_members();//f34) print all members data in the members array
+void print_borrows();//f35) print all members data in the members array
+void print_all();//f36) printing administration function
+void borrow_book(char *ID);//f37)
+void check_member_books();//f38)checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
+void savetotal(int way);//f39) saves all the data in the 3 arrays into files
+void my_exit();//f40) exiting function
+void bookmanagement();//f41) managing the operations of books array
+void administrative();//f42)
+void main_menu(int way);// f43)program's main menu
+void member_management();//f44)
+void borrow_management ();//f45)
+//f46) function that waits for an input from the user to direct him either back into the previous sub-menu
 //or directly to the main menu upon getting special character 'm'
 void wait_for_it(int x);
 
@@ -226,7 +227,7 @@ int check_ISBN_in_books(char ISBN[])
     }
     return -1;
 }
-//Uppers the case of the first letter in each word in a string
+//Uppers the case of the first letter in each word in a string .. char cc resembles capital case
 void capitalization(char*string,int n)// takes array and its size
 {
     int i;
@@ -539,12 +540,6 @@ void delete_book(){
             books[i].current_available_number_of_copies  = books[i + 1].current_available_number_of_copies;
         }
 
- /*strcpy( books[i].Book_Title , "\0");
-           strcpy( books[i].Auther  , "\0" );
-           strcpy( books[i].publisher  ,"\0");
-           strcpy( books[i].ISBN ,"\0" );
-           strcpy( books[i].DateOfPuplication  ,"\0" );
-           strcpy( books[i].category  , "\0" );*/
            printf("Book deleted successfully!!");
            bookarraysize--; // decrease size of the book array by 1
 
@@ -806,6 +801,7 @@ void register_(){
 
 void remove_member (){
 int n=memberarraysize;
+int n2=borrowarraysize;
 int i;
 int flag=0;
 int k;
@@ -813,6 +809,14 @@ char*ID;
 ID=(char*)malloc(15*sizeof(char));
 printf("Please enter member's ID: ");
 scanf("%s",ID);
+for(i=0;i<n2;i++)
+{
+    if(strcmp(borrows[i].user_i,ID)==1)
+    {
+        printf("ID belongs to a user in borrowing registry! Please return the book!!\n ");
+        wait_for_it(2);
+    }
+}
 for(i=0;i<n;i++){
     if(strcmp(members[i].ID,ID)==1){
             flag=1;
@@ -967,10 +971,9 @@ void display_overdue(int n){
 wait_for_it(4);
 }
 
-book*popular;
 
 //most popular books .. searches until popular count reaches 5
-void most_popular_books(){
+void most_popular_books(int way){
     int i,j,max=0,popularcount=0;i;
     popular=(book*)malloc(5*sizeof(book));
     for(i=0;i<bookarraysize;i++)//loop gets maximum number of borrows in the library
@@ -995,14 +998,17 @@ void most_popular_books(){
         }
         max--;//decrement the max value to search for the less popular books
     }
-printf("Most Popular %d books: (popularcount is %d)\n",x,popularcount);
+printf("Most Popular %d books: \n",x,popularcount);
 for(j=0;j<popularcount;j++)
 {
     printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",j+1,popular[j].Book_Title,popular[j].Author,popular[j].publisher,popular[j].ISBN,
            popular[j].DateOfPuplication.day,popular[j].DateOfPuplication.month,popular[j].DateOfPuplication.year,popular[j].number_of_copies,
            popular[j].current_available_number_of_copies,popular[j].category,popular[j].borrows);
 }
+if(way==2)
+{
 wait_for_it(4);
+}
 }
 
 
@@ -1154,30 +1160,22 @@ void print_all(){
     printf("Enter your choice");
     char c;
     c=wise_scan(1);
+    sleep(0.5);//sleep function pauses for an inputed period of time before continuing into the following line of code
+        system("cls");
     switch (c){
     case '1':
-        sleep(0.5);//sleep function pauses for an inputed period of time before continuing into the following line of code
-        system("cls");
         print_books();
         break;
     case '2':
-        sleep(0.5);
-        system("cls");
         print_members();
         break;
     case '3':
-        sleep(0.5);
-        system("cls");
         print_borrows();
         break;
     case '4':
-        sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
     case '5':
-        sleep(0.5);
-        system("cls");
         main_menu(1);
         break;
     }
@@ -1258,40 +1256,28 @@ printf("1)Insert a new book\n2)Search for a book\n3)Add a new copy\n4)Delete a b
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
+sleep(0.5);
+    system("cls");
 switch(c){
 case '1':
-    sleep(0.5);
-    system("cls");
     insert();
     break;
 case '2':
-    sleep(0.5);
-    system("cls");
     search_for_a_book(1);
     break;
 case '3':
-    sleep(0.5);
-    system("cls");
     add_new_copy();
     break;
 case '4':
-    sleep(0.5);
-    system("cls");
     delete_book();
     break;
 case '5':
-    sleep(0.5);
-    system("cls");
     edit_book();
     break;
 case '6':
-    sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
 case '7':
-    sleep(0.5);
-    system("cls");
     main_menu(1);
     break;}
 }
@@ -1302,25 +1288,19 @@ void administrative(){
 printf("Enter your choice: ");
 char c;
 c=wise_scan(1);
+sleep(0.5);
+    system("cls");
 switch(c){
 case '1':
-    sleep(0.5);
-    system("cls");
-    most_popular_books();
+    most_popular_books(2);
     break;
 case '2':
-    sleep(0.5);
-    system("cls");
     overdue_books();
     break;
 case '3':
-    sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
 case '4':
-    sleep(0.5);
-    system("cls");
     main_menu(1);
     break;
 }
@@ -1332,44 +1312,34 @@ void main_menu(int way){
     printf("=============== Welcome to Library System ========================\n");
     red();
     background();
+    most_popular_books(1);
     //goto(10,10);
+    printf("\n\n^^^^System Management^^^^\n");
 printf("1)Book management\n2)Member management\n3)Borrow management\n4)Administrative actions\n5)Print all data\n6)Save changes\n7)Exit\n");
 printf("Enter your choice: ");
 c=wise_scan(way);
+sleep(0.5);
+    system("cls");
 switch(c){
 case '1':
-    sleep(0.5);
-    system("cls");
     bookmanagement();
     break;
 case '2':
-    sleep(0.5);
-    system("cls");
     member_management();
     break;
 case '3':
-    sleep(0.5);
-    system("cls");
     borrow_management();
     break;
 case '4':
-    sleep(0.5);
-    system("cls");
     administrative();
     break;
 case '5':
-    sleep(0.5);
-    system("cls");
     print_all();
     break;
 case '6':
-    sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
 case '7':
-    sleep(0.5);
-    system("cls");
     my_exit();
     break;
 }
@@ -1381,25 +1351,19 @@ printf("1)Register\n2)Remove\n3)Save changes\n4)Return back to main menu\n");
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
+sleep(0.5);
+    system("cls");
 switch(c){
 case '1':
-    sleep(0.5);
-    system("cls");
     register_();
     break;
 case '2':
-    sleep(0.5);
-    system("cls");
     remove_member();
     break;
 case '3':
-    sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
 case '4':
-    sleep(0.5);
-    system("cls");
     main_menu(1);
     break;
     }
@@ -1411,25 +1375,19 @@ printf("1)Borrow\n2)Return book\n3)Save Changes\n4)Return to main menu\n");
 printf("Please enter your choice: ");
 char c;
 c=wise_scan(1);
+sleep(0.5);
+    system("cls");
 switch(c){
 case '1':
-    sleep(0.5);
-    system("cls");
     check_member_books();
     break;
 case '2':
-    sleep(0.5);
-    system("cls");
     return_book();
     break;
 case '3':
-    sleep(0.5);
-    system("cls");
     savetotal(1);
     break;
 case '4':
-    sleep(0.5);
-    system("cls");
     main_menu(1);
     break;
 }
