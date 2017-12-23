@@ -96,10 +96,10 @@ void display_found(int n);//f15) prints the target search information
 int book_struct_copy(int x,int y);//f16)struct copy function
 //f17)Uppers the case of the first letter in each word in a string
 void capitalization(char*string,int n);
-int search_by_title();//f18) search by Book title or part of it function
-int search_by_author();//f19)
-int search_by_ISBN();//f20)
-int search_by_category();//f21)
+int search_by_title(int way);//f18) search by Book title or part of it function
+int search_by_author(int way);//f19)
+int search_by_ISBN(int way);//f20)
+int search_by_category(int way);//f21)
 int multi_search();//f22)
 int search_for_a_book(int way);//f23)
 void insert(); //f24) insert a new book
@@ -263,19 +263,20 @@ int search_for_a_book(int way){
     x=wise_scan(2);
     switch (x){
 case '1':
-    y=search_by_title();
+    y=search_by_title(1);
     break;
 case '2':
-    y=search_by_author();
+    y=search_by_author(1);
     break;
 case '3':
-    y=search_by_ISBN();
+    y=search_by_ISBN(1);
     break;
 case '4':
-    y=search_by_category();
+    y=search_by_category(1);
     break;
 case '5':
     y=multi_search();
+    break;
     }
     if (way==1)
     wait_for_it(1);
@@ -285,14 +286,16 @@ case '5':
 
 int multi_search()
 {
-    int x,y,z,l;
-    x=search_by_title();
-    y=search_by_author();
-    z=search_by_ISBN();
-    l=search_by_category();
-    return x+y+z+l;
+    int x,y,z,l,all;
+    x=search_by_title(2);
+    y=search_by_author(2);
+    z=search_by_ISBN(2);
+    l=search_by_category(2);
+    all=x+y+z+l;
+    display_found(all);
+    return all;
 }
-int search_by_title(){
+int search_by_title(int way){
     char key[50]; // the target of the search
     char title[50];
     int foundcount=0,*book_index;
@@ -365,14 +368,14 @@ int search_by_title(){
         //search_for_a_book();
     //else
         //main_menu();
-    if(foundcount>0)
+    if(foundcount>0 && way!=2)
         display_found(foundcount);
 
         return foundcount;
 }
 
 
-int search_by_author(){
+int search_by_author(int way){
     char key[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
@@ -408,14 +411,14 @@ int search_by_author(){
         //search_for_a_book();
     //else
         //main_menu();
-    if(foundcount>0)
+    if(foundcount>0 && way!=2)
         display_found(foundcount);
 
         return foundcount;
 }
 
 
-int search_by_ISBN(){
+int search_by_ISBN(int way){
     char key[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
@@ -424,7 +427,7 @@ int search_by_ISBN(){
     getchar();
     fflush(stdin);
     scanf("%[^\n]",key);
-    }while(ISBN_validation(key)==0);
+    }while(ISBN_validation(key)==0 && way!=2);
     //printf("%d\n",strlen(key));
     int ol;
     for(ol=0;ol<strlen;ol++)
@@ -445,7 +448,7 @@ int search_by_ISBN(){
 
     }
     char c;
-    if(foundcount==0)
+    if(foundcount==0 && way!=2)
     {
         printf("ISBN wasn't found!\n");
     }
@@ -453,14 +456,14 @@ int search_by_ISBN(){
         //search_for_a_book();
     //else
         //main_menu();
-    if(foundcount>0)
+    if(foundcount>0 && way!=2)
         display_found(foundcount);
 
         return foundcount;
 }
 
 
-int search_by_category(){
+int search_by_category(int way){
     char key[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
@@ -486,7 +489,7 @@ int search_by_category(){
 
     }
     char c;
-    if(foundcount==0)
+    if(foundcount==0 & way!=2)
     {
         printf("Category wasn't found!\n");
     }
@@ -494,7 +497,7 @@ int search_by_category(){
       //  search_for_a_book();
     //else
        // main_menu();
-    if(foundcount>0)
+    if(foundcount>0 && way!=2)
         display_found(foundcount);
         return foundcount;
 }
@@ -526,7 +529,7 @@ void insert(){
      x=check_ISBN_in_books(books[bookarraysize].ISBN);//validates the uniqueness of the new book ISBN
      if(x!=-1)
      {
-        printf("Same ISBN already exists for another registered book!!");
+        printf("Same ISBN already exists for another registered book!!\n");
         printf("Please enter ISBN of book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].ISBN);}
 
@@ -667,9 +670,12 @@ void display_found(int n){
     printf("Search Results:\n");
     for(i=0;i<n;i++)
     {
+        if(foundbks[i].DateOfPuplication.day!=0)
+        {
         printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",i+1,foundbks[i].Book_Title,foundbks[i].Author,foundbks[i].publisher,foundbks[i].ISBN
                ,foundbks[i].DateOfPuplication.day,foundbks[i].DateOfPuplication.month,foundbks[i].DateOfPuplication.year
-               ,foundbks[i].number_of_copies,foundbks[i].current_available_number_of_copies,foundbks[i].category,&foundbks[i].borrows);
+               ,foundbks[i].number_of_copies,foundbks[i].current_available_number_of_copies,foundbks[i].category,foundbks[i].borrows);
+        }
     }
 }
 
@@ -751,7 +757,7 @@ int ISBN_validation(char ISBN[])
     len=strlen(ISBN);
     if(!(len==17 || len==13))
     {
-        printf("Wrong ISBN format!\n");
+        printf("Wrong ISBN format 1!\n");
         return 0;
     }
     for(i=0;i<len-1;i++)
@@ -759,7 +765,7 @@ int ISBN_validation(char ISBN[])
             hyphencount++;
     if(hyphencount<3)
     {
-        printf("Wrong ISBN format!\n");
+        printf("Wrong ISBN format 2!\n");
         return 0;
     }
     if(len==14)
@@ -775,7 +781,7 @@ int ISBN_validation(char ISBN[])
         }
         if(sum%11!=0)
         {
-            printf("Wrong ISBN format!\n");
+            printf("Wrong ISBN format 3!\n");
             return 0;
         }
     }
@@ -792,7 +798,7 @@ int ISBN_validation(char ISBN[])
         }
         if(sum%10!=0)
         {
-            printf("Wrong ISBN format!\n");
+            printf("Wrong ISBN format 4!\n");
             return 0;
         }
     }
@@ -910,7 +916,7 @@ void register_(){
     if(x==-1)
         strcpy(members[n].ID,ID);
     else{
-        printf("Same ID already exits for another registered member!!");
+        printf("Same ID already exits for another registered member!!\m");
         printf("Please enter member's ID: ");getchar();
     scanf("%[^\n]",ID);
     }
@@ -1583,7 +1589,7 @@ case '4':
 void wait_for_it(int x){
     printf("((\nPress any key to return back\npress 'M' to return to main menu\n))");
     char c;
-    getchar();
+    fflush(stdin);
     scanf("%c",&c);
     sleep(0.5);
     system("cls");
