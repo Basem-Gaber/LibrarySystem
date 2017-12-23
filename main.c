@@ -1376,7 +1376,7 @@ char wise_scan(int way){
         fflush(stdin);
             scanf("%c",&c);
             x=isdigit(c);
-    }while(x!=1);
+    }while(x!=1 || c=='0');
     return c;
 }
 
