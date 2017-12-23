@@ -308,7 +308,10 @@ int multi_search()
     z=search_by_ISBN(2,y);
     l=search_by_category(2,z);
     all=x+y+z+l;
+    if(all>0)
+    {
     display_found(all);
+    }
     return all;
 }
 int search_by_title(int way){
@@ -321,7 +324,7 @@ int search_by_title(int way){
     getchar();
     scanf("%[^\n]",key);
     }while(word_validation(key)==0); // scanning the target title for search
-    if(strlen(key)<4)
+    if(strlen(key)<2)
         return 0;
     int i,j,k,l,x=0,titlelen=0,keylen=0,found=0,not_duplicate=1;
     keylen=strlen(key);
@@ -376,7 +379,7 @@ int search_by_title(int way){
     }
 
     char c;
-    if(foundcount==0)
+    if(foundcount==0 && strlen(key)>2)
     {
         printf("Book Title wasn't found!\n");
     }
@@ -419,7 +422,7 @@ int search_by_author(int way,int prev){
 
     }
     char c;
-    if(foundcount==0)
+    if(foundcount==0  && strlen(key)>2)
     {
         printf("Author wasn't found!\n");
     }
@@ -494,7 +497,7 @@ int search_by_category(int way,int prev){
     cc=toupper(key[0]);
     key[0]=cc;
     int i,x=0;
-    printf("Key is %s\n",key);
+    //printf("Key is %s\n",key);
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].category,key);
@@ -1000,12 +1003,12 @@ void register_(){
     strcpy(members[n].member_Phone_Number, phone );
     do{
     printf("Please enter member's age: ");getchar();
-    scanf("%[^\n]",&members[n].member_age);
-    }while(number_validation(members[n].member_age)==0);
+    scanf("%[^\n]",members[n].member_age);
+    }while(number_validation(members[n].member_age)==0 || strlen(members[n].member_age)>2);
     do{
     printf("Please enter member's e-mail: ");getchar();
     scanf("%[^\n]",members[n].member_Email);
-    }while(email_validation(members[n].member_Email)==-1);
+    }while(email_validation(members[n].member_Email)==0);
     members[n].borrows=0;
     wait_for_it(2);
 }
@@ -1024,7 +1027,7 @@ scanf("%s",ID);
 }while(number_validation(ID)==0);
 for(i=0;i<n2;i++)
 {
-    if(strcmp(borrows[i].user_i,ID)==1)
+    if(strcmp(borrows[i].user_i,ID)==0)
     {
         if(borrows[i].date_returned.day==0)
         {
@@ -1217,9 +1220,12 @@ void most_popular_books(int way){
 printf("Most Popular %d books: \n",x,popularcount);
 for(j=0;j<popularcount;j++)
 {
+    if(popular[j].borrows!=0)
+    {
     printf("%d)%s,%s,%s,%s,%d/%d/%d,%d,%d,%s,%d\n",j+1,popular[j].Book_Title,popular[j].Author,popular[j].publisher,popular[j].ISBN,
            popular[j].DateOfPuplication.day,popular[j].DateOfPuplication.month,popular[j].DateOfPuplication.year,popular[j].number_of_copies,
            popular[j].current_available_number_of_copies,popular[j].category,popular[j].borrows);
+    }
 }
 if(way==2)
 {
