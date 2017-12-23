@@ -174,7 +174,7 @@ int read_books_file (){
 }
 void edit_book(){
     int i,x=0,bookindex=0;
-    char ISBN[15],newdata[50];
+    char ISBN[18],newdata[50];
     do{
     printf("Please enter the ISBN of the book you wish to modify: \n");
     scanf("%s",ISBN);
@@ -182,16 +182,22 @@ void edit_book(){
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(ISBN,books[i].ISBN);
+       // printf("%d\n",x);
         if(x==0)
         {
             bookindex=i;
-            break;
+             break;
         }
-else {printf("THIS ISBN DOES NOT EXIST!");
-    bookindex=-1;
-     wait_for_it(1);
+
+
 }
-    }
+ if (x!=0)
+ {
+      printf("THIS ISBN DOES NOT EXIST!");
+     bookindex=-1;
+     wait_for_it(1);
+ }
+
     char c;
     if (bookindex!=-1)
     {printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
@@ -263,18 +269,28 @@ int search_for_a_book(int way){
     x=wise_scan(2);
     switch (x){
 case '1':
+    Sleep(0.5);
+    system("cls");
     y=search_by_title(1);
     break;
 case '2':
+    Sleep(0.5);
+    system("cls");
     y=search_by_author(1,0);
     break;
 case '3':
+    Sleep(0.5);
+    system("cls");
     y=search_by_ISBN(1,0);
     break;
 case '4':
+    Sleep(0.5);
+    system("cls");
     y=search_by_category(1,0);
     break;
 case '5':
+    Sleep(0.5);
+    system("cls");
     y=multi_search();
     break;
     }
@@ -478,7 +494,7 @@ int search_by_category(int way,int prev){
     cc=toupper(key[0]);
     key[0]=cc;
     int i,x=0;
-    printf("Key is %s",key);
+    printf("Key is %s\n",key);
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].category,key);
@@ -516,14 +532,18 @@ void insert(){
      //fgets(books[bookarraysize].Book_Title,100,stdin);
      scanf("%[^\n]s",books[bookarraysize].Book_Title);
      }while(word_validation(books[bookarraysize].Book_Title)==0);
+     capitalization(books[bookarraysize].Book_Title,strlen(books[bookarraysize].Book_Title));
      do{
      printf("Please enter the author of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].Author);
      }while(word_validation(books[bookarraysize].Author)==0);
+     capitalization(books[bookarraysize].Author,strlen(books[bookarraysize].Author));
+
      do{
      printf("Please enter publisher of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].publisher);
      }while(word_validation(books[bookarraysize].publisher)==0);
+     capitalization(books[bookarraysize].publisher,strlen(books[bookarraysize].publisher));
      do{
      printf("Please enter ISBN of book: (as 978-3-16-148410-0)\n");
      scanf("%s",ISBN);
@@ -545,6 +565,7 @@ void insert(){
      books[bookarraysize].current_available_number_of_copies=books[bookarraysize].number_of_copies;
      printf("Please enter category of book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].category);
+     capitalization(books[bookarraysize].category,strlen(books[bookarraysize].category));
      books[bookarraysize].borrows=books[bookarraysize].number_of_copies-books[bookarraysize].current_available_number_of_copies;
         bookarraysize++;
     wait_for_it(1);
@@ -914,6 +935,7 @@ void register_(){
     printf("Please enter member's first name: ");
     Name_validation(firstName);
     strcpy(members[n].first_name,firstName);
+
     printf("Please enter member's last name: ");
     fflush(stdin);
     Name_validation(lastName);
