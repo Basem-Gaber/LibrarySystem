@@ -106,28 +106,30 @@ void insert(); //f24) insert a new book
 void add_new_copy();//f25) adding new book copy
 void delete_book(); //f26) deleting a book from the list
 void register_(); //f27) registration of new member
-int word_validation(char word[]);//f28)
-int email_validation(char email[]);//f)29 email validation
-void Name_validation(char*name);//f30) last and first name validation
-void phone_validation(char phone[]);//f31) phone number validation
-void remove_member ();//f32)
-void savebook();//f33) saving the changes in books array into file
-void savemember();//f34) saving the changes in members array into file
-void saveborrow();//f35) saving the changes in Borrows array into file
-void print_books(); //f36) print all books data in the books array
-void print_members();//f37) print all members data in the members array
-void print_borrows();//f38) print all members data in the members array
-void print_all();//f39) printing administration function
-void borrow_book(char *ID);//f40)
-void check_member_books();//f41)checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
-void savetotal(int way);//f42) saves all the data in the 3 arrays into files
-void my_exit();//f43) exiting function
-void bookmanagement();//f44) managing the operations of books array
-void administrative();//f45)
-void main_menu(int way);// f46)program's main menu
-void member_management();//f47)
-void borrow_management ();//f48)
-//f49) function that waits for an input from the user to direct him either back into the previous sub-menu
+int number_validation(char number[]);//f28)
+int word_validation(char word[]);//f29)
+int ISBN_validation(char ISBN[]);//f30)
+int email_validation(char email[]);//f)31 email validation
+void Name_validation(char*name);//f32) last and first name validation
+void phone_validation(char phone[]);//f33) phone number validation
+void remove_member ();//f34)
+void savebook();//f35) saving the changes in books array into file
+void savemember();//f36) saving the changes in members array into file
+void saveborrow();//f37) saving the changes in Borrows array into file
+void print_books(); //f38) print all books data in the books array
+void print_members();//f39) print all members data in the members array
+void print_borrows();//f40) print all members data in the members array
+void print_all();//f41) printing administration function
+void borrow_book(char *ID);//f42)
+void check_member_books();//f43)checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
+void savetotal(int way);//f44) saves all the data in the 3 arrays into files
+void my_exit();//f45) exiting function
+void bookmanagement();//f46) managing the operations of books array
+void administrative();//f47)
+void main_menu(int way);// f48)program's main menu
+void member_management();//f49)
+void borrow_management ();//f50)
+//f51) function that waits for an input from the user to direct him either back into the previous sub-menu
 //or directly to the main menu upon getting special character 'm'
 void wait_for_it(int x);
 
@@ -171,10 +173,12 @@ int read_books_file (){
     return i;
 }
 void edit_book(){
-    int i,x=0,y=0,bookindex=0;
+    int i,x=0,bookindex=0;
     char ISBN[15],newdata[50];
+    do{
     printf("Please enter the ISBN of the book you wish to modify: \n");
     scanf("%s",ISBN);
+    }while(ISBN_validation(ISBN)==0);
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(ISBN,books[i].ISBN);
@@ -183,30 +187,32 @@ void edit_book(){
             bookindex=i;
             break;
         }
-else {printf("THIS ISBN IS NOT EXISTS!");
+else {printf("THIS ISBN DOES NOT EXIST!");
     bookindex=-1;
      wait_for_it(1);
 }
     }
+    char c;
     if (bookindex!=-1)
     {printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
-    scanf("%d",&y);
+    char y;
+    y=wise_scan(2);
     do{
     printf("Please enter the new data you wish to insert:\n");
     getchar();
     scanf("%[^\n]",newdata);
     }while(word_validation(newdata)==0);
     switch (y){
-case 1:
+case '1':
     strcpy(books[bookindex].Book_Title,newdata);
     break;
-case 2:
+case '2':
     strcpy(books[bookindex].Author,newdata);
     break;
-case 3:
+case '3':
     strcpy(books[bookindex].category,newdata);
     break;
-case 4:
+case '4':
     strcpy(books[bookindex].publisher,newdata);
     break;
     }
@@ -251,23 +257,24 @@ void capitalization(char*string,int n)// takes array and its size
 }
 int search_for_a_book(int way){
     printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\n5)Multi Search\nChoice(1-2-3-4-5)?\n");
-    int x,y;
+    int y;
     char c='n';
-    scanf("%d",&x);
+    char x;
+    x=wise_scan(2);
     switch (x){
-case 1:
+case '1':
     y=search_by_title();
     break;
-case 2:
+case '2':
     y=search_by_author();
     break;
-case 3:
+case '3':
     y=search_by_ISBN();
     break;
-case 4:
+case '4':
     y=search_by_category();
     break;
-case 5:
+case '5':
     y=multi_search();
     }
     if (way==1)
@@ -290,9 +297,11 @@ int search_by_title(){
     char title[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
+    do{
     printf("Please enter the title of the book: \n");
     getchar();
-    scanf("%[^\n]",key); // scanning the target title for search
+    scanf("%[^\n]",key);
+    }while(word_validation(key)==0); // scanning the target title for search
     if(strlen(key)<4)
         return 0;
     int i,j,k,l,x=0,titlelen=0,keylen=0,found=0,not_duplicate=1;
@@ -367,9 +376,11 @@ int search_by_author(){
     char key[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
+    do{
     printf("Please enter the name of the author: \n");
     fflush(stdin);
     scanf("%[^\n]",key);
+    }while(word_validation(key)==0);
     if(strlen(key)<2)
         return 0;
     char cc;
@@ -408,10 +419,12 @@ int search_by_ISBN(){
     char key[50];
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
+    do{
     printf("Please enter the ISBN: \n");
     getchar();
     fflush(stdin);
     scanf("%[^\n]",key);
+    }while(ISBN_validation(key)==0);
     //printf("%d\n",strlen(key));
     int ol;
     for(ol=0;ol<strlen;ol++)
@@ -505,16 +518,11 @@ void insert(){
      printf("Please enter publisher of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].publisher);
      }while(word_validation(books[bookarraysize].publisher)==0);
+     do{
      printf("Please enter ISBN of book: (as 978-3-16-148410-0)\n");
      scanf("%s",ISBN);
-     if (strlen(ISBN)!=17 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-')
-     do
-     {
-         printf("WRONG ISBN FORMAT\nPlease enter ISBN of book: (as 978-3-16-148410-0)\n");
-         scanf("%s",ISBN);
-     } while (strlen(ISBN)!=13 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-');
-    strcpy(books[bookarraysize].ISBN,ISBN);
-
+    }while(ISBN_validation(ISBN)==0);
+     strcpy(books[bookarraysize].ISBN,ISBN);
      x=check_ISBN_in_books(books[bookarraysize].ISBN);//validates the uniqueness of the new book ISBN
      if(x!=-1)
      {
@@ -540,8 +548,10 @@ void insert(){
     char ISBN[18];
     int copies;
     int i,r,flag=0;
+    do{
     printf("Enter ISBN of the book as (978-3-16-148410-0):\n");
     scanf("%s",ISBN);
+    }while(ISBN_validation(ISBN)==0);
     printf("Enter number of copies of the book(must be non-negative number): ");
     do {scanf("%d",&copies);} while (copies<0); // "no negative values" check
     for (i=0;i<bookarraysize;i++){
@@ -563,8 +573,10 @@ void insert(){
 void delete_book(){
     char ISBN[18];
     int found=0,pos,i;
+    do{
     printf("enter ISBN of the book as (978-3-16-148410-0):\n");
     scanf("%s",ISBN);
+    }while(ISBN_validation(ISBN)==0);
      for (i=0;i<bookarraysize;i++){
         if((strcmp(books[i].ISBN,ISBN))==0) // search for ISBN
         {
@@ -704,6 +716,20 @@ int check_ID(char ID[])
     }
     return -1;
 }
+int number_validation(char number[])
+{
+    int i,valid=1;
+    char c;
+    for(i=0;i<strlen(number)-1;i++)
+    {
+        c=number[i];
+        if(isdigit(c)==0){
+            printf("Required data must contain numbers!\n");
+            valid=0;}
+    }
+    return valid;
+
+}
 int word_validation(char word[])
 {
     int i,valid=1;
@@ -717,6 +743,60 @@ int word_validation(char word[])
     }
     return valid;
 }
+}
+
+int ISBN_validation(char ISBN[])
+{
+    int len,i,hyphencount=0,sum=0,x;
+    len=strlen(ISBN);
+    if(!(len==18 || len==14))
+    {
+        printf("Wrong ISBN format!\n");
+        return 0;
+    }
+    for(i=0;i<len-1;i++)
+        if(ISBN[i]=='-')
+            hyphencount++;
+    if(hyphencount<3)
+    {
+        printf("Wrong ISBN format!\n");
+        return 0;
+    }
+    if(len==14)
+    {
+        int j=10;
+        for(i=0;i<len-1;i++)
+        {
+            if(ISBN[i]=='-')
+                i++;
+            x=atoi(ISBN[i]);
+            sum+=x*j;
+            j--;
+        }
+        if(sum%11!=0)
+        {
+            printf("Wrong ISBN format!\n");
+            return 0;
+        }
+    }
+    if(len==18)
+    {
+        int j=13;
+        for(i=0;i<len-1;i++)
+        {
+            if(ISBN[i]=='-')
+                i++;
+            x=atoi(ISBN[i]);
+            sum+=x*j;
+            j--;
+        }
+        if(sum%10!=0)
+        {
+            printf("Wrong ISBN format!\n");
+            return 0;
+        }
+    }
+    return 1;
 }
 int email_validation(char email[])
 {
@@ -779,7 +859,7 @@ void phone_validation(char phone[])
              ||name[i] =='7'||name[i] =='8'|| name[i] =='9')
  {
               printf("Wrong Entry\nPlease Enter The right Name format: ");
-                        scanf("%s",name);
+                        scanf("%[^\n]",name);
           }
 
     i++;
@@ -787,7 +867,7 @@ void phone_validation(char phone[])
      if (strlen(name)>50)
      {
          do { printf("Wrong Entry\nPlease Enter The right Name format: ");
-         scanf("%s",name);
+         scanf("%[^\n]",name);
          int i=0;
 
      while (name[i]!='\0')
@@ -796,7 +876,7 @@ void phone_validation(char phone[])
              ||name[i] =='7'||name[i] =='8'|| name[i] =='9')
  {
               printf("Wrong Entry\nPlease Enter The right Name format:");
-                        scanf("%s",name);
+                        scanf("%[^\n]",name);
           }
 
     i++;
@@ -822,9 +902,10 @@ void register_(){
     Name_validation(lastName);
     strcpy(members[n].last_name,lastName);
     scanf("%[^\n]",members[n].last_name);
-
+    do{
     printf("Please enter member's ID: ");getchar();
     scanf("%[^\n]",ID);
+    }while(number_validation(ID)==0);
     x=check_ID(ID);// check validation of the new ID added
     if(x==-1)
         strcpy(members[n].ID,ID);
@@ -878,9 +959,10 @@ void register_(){
     printf("Please enter member's phone number: ");
     phone_validation(phone);
     strcpy(members[n].member_Phone_Number, phone );
+    do{
     printf("Please enter member's age: ");getchar();
     scanf("%[^\n]",&members[n].member_age);
-
+    }while(number_validation(members[n].member_age)==0);
     do{
     printf("Please enter member's e-mail: ");getchar();
     scanf("%[^\n]",members[n].member_Email);
@@ -897,14 +979,19 @@ int flag=0;
 int k;
 char*ID;
 ID=(char*)malloc(15*sizeof(char));
+do{
 printf("Please enter member's ID: ");
 scanf("%s",ID);
+}while(number_validation(ID)==0);
 for(i=0;i<n2;i++)
 {
     if(strcmp(borrows[i].user_i,ID)==1)
     {
+        if(borrows[i].date_returned.day==0)
+        {
         printf("ID belongs to a user in borrowing registry! Please return the book!!\n ");
         wait_for_it(2);
+        }
     }
 }
 for(i=0;i<n;i++){
@@ -1130,8 +1217,10 @@ void return_book(){
     int x,y,z;
     char ISBN[15];
     char ID[10];
+    do{
     printf("Please enter the ID of the user returning the book:\n");
     scanf("%s",ID);
+    }while(number_validation(ID)==0);
     printf("Please enter the ISBN of the returned book: \n");
     scanf("%s",ISBN);
     x=check_ISBN_in_borrows(ISBN,ID);
@@ -1282,8 +1371,10 @@ void check_member_books(){
     int flag=0;
     int index;
     int i;
+    do{
 printf("please enter user ID:");
 scanf("%s",ID);
+    }while(number_validation(ID)==0);
 for(i=0;i<memberarraysize;i++){
     if(strcmp(ID,members[i].ID)==0)
         { flag=1;
