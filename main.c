@@ -749,7 +749,7 @@ int ISBN_validation(char ISBN[])
 {
     int len,i,hyphencount=0,sum=0,x;
     len=strlen(ISBN);
-    if(!(len==18 || len==14))
+    if(!(len==17 || len==13))
     {
         printf("Wrong ISBN format!\n");
         return 0;
