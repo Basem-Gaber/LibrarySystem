@@ -1277,7 +1277,7 @@ void return_book(){
     z=check_ID(ID);
     members[z].borrows--;
     printf("Book returned!");
-    sleep(5);
+    sleep(0.5);
     wait_for_it(3);
 
 
@@ -1338,12 +1338,12 @@ void borrow_book(char *ID){
     printf("Please enter Dates as following\n Day/Month/Year");
     do{printf("\nDate borrowed: ");
       scanf("%d%d%d",&borrows[borrowarraysize].date_borrowed.day,&borrows[borrowarraysize].date_borrowed.month,&borrows[borrowarraysize].date_borrowed.year);
-    }while ((books[bookarraysize].DateOfPuplication.day>31 || books[bookarraysize].DateOfPuplication.day<1)|| (books[bookarraysize].DateOfPuplication.month>12 || books[bookarraysize].DateOfPuplication.month<1)
-          || (books[bookarraysize].DateOfPuplication.year>2018 || books[bookarraysize].DateOfPuplication.year < 1600));
+    }while ((borrows[borrowarraysize].date_borrowed.day>31 || borrows[borrowarraysize].date_borrowed.day<1)|| (borrows[borrowarraysize].date_borrowed.month>12 || borrows[borrowarraysize].date_borrowed.month<1)
+          || (borrows[borrowarraysize].date_borrowed.year>2018 || borrows[borrowarraysize].date_borrowed.year < 1600));
     do{printf("\nDate due return: ");
       scanf("%d%d%d",&borrows[borrowarraysize].date_due_to_return.day,&borrows[borrowarraysize].date_due_to_return.month,&borrows[borrowarraysize].date_due_to_return.year);
-    }while ((books[bookarraysize].DateOfPuplication.day>31 || books[bookarraysize].DateOfPuplication.day<1)|| (books[bookarraysize].DateOfPuplication.month>12 || books[bookarraysize].DateOfPuplication.month<1)
-          || (books[bookarraysize].DateOfPuplication.year>2018 || books[bookarraysize].DateOfPuplication.year < 1600));
+    }while ((borrows[borrowarraysize].date_due_to_return.day>31 || borrows[borrowarraysize].date_due_to_return.day<1)|| (borrows[borrowarraysize].date_due_to_return.month>12 || borrows[borrowarraysize].date_due_to_return.month<1)
+          || (borrows[borrowarraysize].date_due_to_return.year>2018 || borrows[borrowarraysize].date_due_to_return.year < 1600));
     borrows[borrowarraysize].date_returned.day=0;
     borrows[borrowarraysize].date_returned.month=0;
     borrows[borrowarraysize].date_returned.year=0;
