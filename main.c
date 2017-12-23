@@ -97,9 +97,9 @@ int book_struct_copy(int x,int y);//f16)struct copy function
 //f17)Uppers the case of the first letter in each word in a string
 void capitalization(char*string,int n);
 int search_by_title(int way);//f18) search by Book title or part of it function
-int search_by_author(int way);//f19)
-int search_by_ISBN(int way);//f20)
-int search_by_category(int way);//f21)
+int search_by_author(int way,int prev);//f19)
+int search_by_ISBN(int way,int prev);//f20)
+int search_by_category(int way,int prev);//f21)
 int multi_search();//f22)
 int search_for_a_book(int way);//f23)
 void insert(); //f24) insert a new book
@@ -266,13 +266,13 @@ case '1':
     y=search_by_title(1);
     break;
 case '2':
-    y=search_by_author(1);
+    y=search_by_author(1,0);
     break;
 case '3':
-    y=search_by_ISBN(1);
+    y=search_by_ISBN(1,0);
     break;
 case '4':
-    y=search_by_category(1);
+    y=search_by_category(1,0);
     break;
 case '5':
     y=multi_search();
@@ -288,9 +288,9 @@ int multi_search()
 {
     int x,y,z,l,all;
     x=search_by_title(2);
-    y=search_by_author(2);
-    z=search_by_ISBN(2);
-    l=search_by_category(2);
+    y=search_by_author(2,x);
+    z=search_by_ISBN(2,y);
+    l=search_by_category(2,z);
     all=x+y+z+l;
     display_found(all);
     return all;
@@ -314,9 +314,9 @@ int search_by_title(int way){
     {
         x=strcmp(books[i].Book_Title,key);
         if(x==0){
-            int way;
-            way=book_struct_copy(foundcount,i);
-            if(way==1){
+            int way2;
+            way2=book_struct_copy(foundcount,i);
+            if(way2==1){
             foundcount++;
             book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -349,9 +349,9 @@ int search_by_title(int way){
         }
         if(found==1&&not_duplicate==1)
         {
-            int way;
-            way=book_struct_copy(foundcount,i);
-            if(way==1){
+            int way2;
+            way2=book_struct_copy(foundcount,i);
+            if(way2==1){
             foundcount++;
             book_index[foundcount]=i;}
         }
@@ -375,9 +375,9 @@ int search_by_title(int way){
 }
 
 
-int search_by_author(int way){
+int search_by_author(int way,int prev){
     char key[50];
-    int foundcount=0,*book_index;
+    int foundcount=prev,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     do{
     printf("Please enter the name of the author: \n");
@@ -394,9 +394,9 @@ int search_by_author(int way){
     {
         x=strcmp(books[i].Author,key);
         if(x==0){
-            int way;
-            way=book_struct_copy(foundcount,i);
-            if(way==1){
+            int way2;
+            way2=book_struct_copy(foundcount,i);
+            if(way2==1){
             foundcount++;
             book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -418,9 +418,9 @@ int search_by_author(int way){
 }
 
 
-int search_by_ISBN(int way){
+int search_by_ISBN(int way,int prev){
     char key[50];
-    int foundcount=0,*book_index;
+    int foundcount=prev,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     do{
     printf("Please enter the ISBN: \n");
@@ -439,9 +439,9 @@ int search_by_ISBN(int way){
     {
         x=strcmp(books[i].ISBN,key);
         if(x==0){
-            int way;
-            way=book_struct_copy(foundcount,i);
-            if(way==1){
+            int way2;
+            way2=book_struct_copy(foundcount,i);
+            if(way2==1){
             foundcount++;
             book_index[foundcount]=i;};//stores the index of the book in main array to allow for future editing on book after search
         }
@@ -463,26 +463,29 @@ int search_by_ISBN(int way){
 }
 
 
-int search_by_category(int way){
+int search_by_category(int way,int prev){
     char key[50];
-    int foundcount=0,*book_index;
+    int foundcount=prev,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
+    do{
     printf("Please enter the category: \n");
     fflush(stdin);
-    scanf("[^\n]",key);
+    scanf("%[^\n]",key);
+    }while(word_validation(key)==0);
     if(strlen(key)<2)
         return 0;
     char cc;
     cc=toupper(key[0]);
     key[0]=cc;
     int i,x=0;
+    printf("Key is %s",key);
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].category,key);
         if(x==0){
-            int way;
-            way=book_struct_copy(foundcount,i);
-            if(way==1){
+            int way2;
+            way2=book_struct_copy(foundcount,i);
+            if(way2==1){
             foundcount++;
             book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
