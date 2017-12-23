@@ -809,18 +809,24 @@ int ISBN_validation(char ISBN[])
 }
 int email_validation(char email[])
 {
-    int i,valid=1;
+    int i,valid=1,found=0;
     int len=strlen(email);
-    for(i=0;i<strlen-1;i++)
+    //printf("check beta");
+    for(i=0;i<len-1;i++)
     {
-        if(email[i]!='@')
-            valid=0;
+        if(email[i]=='@')
+            found=1;
     }
+    if(found==0)
+        valid=0;
+    //printf("chechk gamma");
     if(email[len-1]!='m' || email[len-2]!='o' || email[len-3]!='c' || email[len-4]!='.')
         valid=0;
     if(valid==0){
-        printf("Please enter a correct em-mail format!!\n");
-        return-1;}
+        printf("Please enter a correct e-mail format!!\n");
+}
+//printf("check alpha");
+return valid;
 }
 void phone_validation(char phone[])
 { int i=0;
@@ -861,7 +867,8 @@ void phone_validation(char phone[])
  void Name_validation(char*name)
  {
       int i=0;
-  scanf("%s",name);
+      fflush(stdin);
+  scanf("%[^\n]",name);
      while (name[i]!='\0')
      {
          if (name[i] =='0'|| name[i] =='1'||name[i] =='2'||name[i] =='3'||name[i] =='4'||name[i] =='5'||name[i] =='6'
@@ -908,11 +915,12 @@ void register_(){
     Name_validation(firstName);
     strcpy(members[n].first_name,firstName);
     printf("Please enter member's last name: ");
+    fflush(stdin);
     Name_validation(lastName);
     strcpy(members[n].last_name,lastName);
-    scanf("%[^\n]",members[n].last_name);
+    //scanf("%[^\n]",members[n].last_name);
     do{
-    printf("Please enter member's ID: ");getchar();
+    printf("Please enter member's ID: ");fflush(stdin);
     scanf("%[^\n]",ID);
     }while(number_validation(ID)==0);
     x=check_ID(ID);// check validation of the new ID added
