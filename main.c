@@ -93,38 +93,41 @@ int check_ISBN_in_borrows(char ISBN[],char ID[]);
 int check_ID(char ID[]);
 void return_book();//f14)return book after borrowing function
 void display_found(int n);//f15) prints the target search information
-void book_struct_copy(int x,int y);//f16)struct copy function
+int book_struct_copy(int x,int y);//f16)struct copy function
 //f17)Uppers the case of the first letter in each word in a string
 void capitalization(char*string,int n);
 int search_by_title();//f18) search by Book title or part of it function
 int search_by_author();//f19)
 int search_by_ISBN();//f20)
 int search_by_category();//f21)
-int search_for_a_book(int way);//f22)
-void insert(); //f23) insert a new book
-void add_new_copy();//f24) adding new book copy
-void delete_book(); //f25) deleting a book from the list
-void register_(); //f26) registration of new member
-void Name_validation(char*name);//f27) last and first name validation
-void phone_validation(char phone[]);//f28) phone number validation
-void remove_member ();//f29)
-void savebook();//f30) saving the changes in books array into file
-void savemember();//f31) saving the changes in members array into file
-void saveborrow();//f32) saving the changes in Borrows array into file
-void print_books(); //f33) print all books data in the books array
-void print_members();//f34) print all members data in the members array
-void print_borrows();//f35) print all members data in the members array
-void print_all();//f36) printing administration function
-void borrow_book(char *ID);//f37)
-void check_member_books();//f38)checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
-void savetotal(int way);//f39) saves all the data in the 3 arrays into files
-void my_exit();//f40) exiting function
-void bookmanagement();//f41) managing the operations of books array
-void administrative();//f42)
-void main_menu(int way);// f43)program's main menu
-void member_management();//f44)
-void borrow_management ();//f45)
-//f46) function that waits for an input from the user to direct him either back into the previous sub-menu
+int multi_search();//f22)
+int search_for_a_book(int way);//f23)
+void insert(); //f24) insert a new book
+void add_new_copy();//f25) adding new book copy
+void delete_book(); //f26) deleting a book from the list
+void register_(); //f27) registration of new member
+int word_validation(char word[]);//f28)
+int email_validation(char email[]);//f)29 email validation
+void Name_validation(char*name);//f30) last and first name validation
+void phone_validation(char phone[]);//f31) phone number validation
+void remove_member ();//f32)
+void savebook();//f33) saving the changes in books array into file
+void savemember();//f34) saving the changes in members array into file
+void saveborrow();//f35) saving the changes in Borrows array into file
+void print_books(); //f36) print all books data in the books array
+void print_members();//f37) print all members data in the members array
+void print_borrows();//f38) print all members data in the members array
+void print_all();//f39) printing administration function
+void borrow_book(char *ID);//f40)
+void check_member_books();//f41)checking the number of borrowed books for that member to make sure that he has the right to borrow another book or not
+void savetotal(int way);//f42) saves all the data in the 3 arrays into files
+void my_exit();//f43) exiting function
+void bookmanagement();//f44) managing the operations of books array
+void administrative();//f45)
+void main_menu(int way);// f46)program's main menu
+void member_management();//f47)
+void borrow_management ();//f48)
+//f49) function that waits for an input from the user to direct him either back into the previous sub-menu
 //or directly to the main menu upon getting special character 'm'
 void wait_for_it(int x);
 
@@ -188,9 +191,11 @@ else {printf("THIS ISBN IS NOT EXISTS!");
     if (bookindex!=-1)
     {printf("Please select which data would you like to configure:\n1)Title\n2)Author\n3)Category\n4)Publisher\n");
     scanf("%d",&y);
+    do{
     printf("Please enter the new data you wish to insert:\n");
     getchar();
     scanf("%[^\n]",newdata);
+    }while(word_validation(newdata)==0);
     switch (y){
 case 1:
     strcpy(books[bookindex].Book_Title,newdata);
@@ -245,7 +250,7 @@ void capitalization(char*string,int n)// takes array and its size
 
 }
 int search_for_a_book(int way){
-    printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\nChoice(1-2-3-4)?\n");
+    printf("Please enter the desired method of searching:\n1)Search by book title\n2)Search by author name\n3)Search by ISBN\n4)Search by book category\n5)Multi Search\nChoice(1-2-3-4-5)?\n");
     int x,y;
     char c='n';
     scanf("%d",&x);
@@ -262,6 +267,8 @@ case 3:
 case 4:
     y=search_by_category();
     break;
+case 5:
+    y=multi_search();
     }
     if (way==1)
     wait_for_it(1);
@@ -269,6 +276,15 @@ case 4:
         return y;
 }
 
+int multi_search()
+{
+    int x,y,z,l;
+    x=search_by_title();
+    y=search_by_author();
+    z=search_by_ISBN();
+    l=search_by_category();
+    return x+y+z+l;
+}
 int search_by_title(){
     char key[50]; // the target of the search
     char title[50];
@@ -277,6 +293,8 @@ int search_by_title(){
     printf("Please enter the title of the book: \n");
     getchar();
     scanf("%[^\n]",key); // scanning the target title for search
+    if(strlen(key)<4)
+        return 0;
     int i,j,k,l,x=0,titlelen=0,keylen=0,found=0,not_duplicate=1;
     keylen=strlen(key);
     capitalization(key,keylen); // capitalize the first letter of the target title
@@ -284,9 +302,11 @@ int search_by_title(){
     {
         x=strcmp(books[i].Book_Title,key);
         if(x==0){
-            book_struct_copy(foundcount,i);
+            int way;
+            way=book_struct_copy(foundcount,i);
+            if(way==1){
             foundcount++;
-            book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
+            book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
 
     }
@@ -317,9 +337,11 @@ int search_by_title(){
         }
         if(found==1&&not_duplicate==1)
         {
-            book_struct_copy(foundcount,i);
+            int way;
+            way=book_struct_copy(foundcount,i);
+            if(way==1){
             foundcount++;
-            book_index[foundcount]=i;
+            book_index[foundcount]=i;}
         }
         found=0;
         not_duplicate=1;
@@ -346,8 +368,10 @@ int search_by_author(){
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     printf("Please enter the name of the author: \n");
-    getchar();
+    fflush(stdin);
     scanf("%[^\n]",key);
+    if(strlen(key)<2)
+        return 0;
     char cc;
     cc=toupper(key[0]);
     key[0]=cc;
@@ -356,9 +380,11 @@ int search_by_author(){
     {
         x=strcmp(books[i].Author,key);
         if(x==0){
-            book_struct_copy(foundcount,i);
+            int way;
+            way=book_struct_copy(foundcount,i);
+            if(way==1){
             foundcount++;
-            book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
+            book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
 
     }
@@ -383,15 +409,25 @@ int search_by_ISBN(){
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     printf("Please enter the ISBN: \n");
-    scanf("%s",key);
+    getchar();
+    fflush(stdin);
+    scanf("%[^\n]",key);
+    //printf("%d\n",strlen(key));
+    int ol;
+    for(ol=0;ol<strlen;ol++)
+        //printf("%c\t",key[ol]);
+    if(strlen(key)<2)
+        return 0;
     int i,x=0;
     for(i=0;i<bookarraysize;i++)
     {
         x=strcmp(books[i].ISBN,key);
         if(x==0){
-            book_struct_copy(foundcount,i);
+            int way;
+            way=book_struct_copy(foundcount,i);
+            if(way==1){
             foundcount++;
-            book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
+            book_index[foundcount]=i;};//stores the index of the book in main array to allow for future editing on book after search
         }
 
     }
@@ -416,7 +452,10 @@ int search_by_category(){
     int foundcount=0,*book_index;
     book_index=(int*)malloc(10*sizeof(int));
     printf("Please enter the category: \n");
-    scanf("%s",key);
+    fflush(stdin);
+    scanf("[^\n]",key);
+    if(strlen(key)<2)
+        return 0;
     char cc;
     cc=toupper(key[0]);
     key[0]=cc;
@@ -425,9 +464,11 @@ int search_by_category(){
     {
         x=strcmp(books[i].category,key);
         if(x==0){
-            book_struct_copy(foundcount,i);
+            int way;
+            way=book_struct_copy(foundcount,i);
+            if(way==1){
             foundcount++;
-            book_index[foundcount]=i;//stores the index of the book in main array to allow for future editing on book after search
+            book_index[foundcount]=i;}//stores the index of the book in main array to allow for future editing on book after search
         }
 
     }
@@ -451,13 +492,19 @@ void insert(){
     int x;
 
      printf("Enter information of the new book\n");
+     do{
      printf("Please enter book's title: ");getchar();
      //fgets(books[bookarraysize].Book_Title,100,stdin);
      scanf("%[^\n]s",books[bookarraysize].Book_Title);
+     }while(word_validation(books[bookarraysize].Book_Title)==0);
+     do{
      printf("Please enter the author of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].Author);
+     }while(word_validation(books[bookarraysize].Author)==0);
+     do{
      printf("Please enter publisher of the book: ");getchar();
      scanf("%[^\n]s",books[bookarraysize].publisher);
+     }while(word_validation(books[bookarraysize].publisher)==0);
      printf("Please enter ISBN of book: (as 978-3-16-148410-0)\n");
      scanf("%s",ISBN);
      if (strlen(ISBN)!=17 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-')
@@ -465,7 +512,7 @@ void insert(){
      {
          printf("WRONG ISBN FORMAT\nPlease enter ISBN of book: (as 978-3-16-148410-0)\n");
          scanf("%s",ISBN);
-     } while (strlen(ISBN)!=17 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-');
+     } while (strlen(ISBN)!=13 || ISBN[3]!='-'|| ISBN[5]!='-'|| ISBN[8]!='-'|| ISBN[15]!='-');
     strcpy(books[bookarraysize].ISBN,ISBN);
 
      x=check_ISBN_in_books(books[bookarraysize].ISBN);//validates the uniqueness of the new book ISBN
@@ -493,9 +540,9 @@ void insert(){
     char ISBN[18];
     int copies;
     int i,r,flag=0;
-    printf("enter ISBN of the book as (978-3-16-148410-0):\n");
+    printf("Enter ISBN of the book as (978-3-16-148410-0):\n");
     scanf("%s",ISBN);
-    printf("enter number of copies of the book: ");
+    printf("Enter number of copies of the book(must be non-negative number): ");
     do {scanf("%d",&copies);} while (copies<0); // "no negative values" check
     for (i=0;i<bookarraysize;i++){
             r= strcmp(books[i].ISBN,ISBN);// if ISBN found increment the no. of copies by the value entered
@@ -580,7 +627,14 @@ void print_books(){
     wait_for_it(5);
 }
 //struct copy function
-void book_struct_copy(int x,int y){
+int book_struct_copy(int x,int y){
+    int i,duplicate=0,done=0;
+    for(i=0;i<x-1;i++)
+    {
+        if(strcmp(foundbks[i].ISBN,books[y].ISBN)==1)
+            duplicate=1;
+    }
+    if(duplicate!=1){
     strcpy(foundbks[x].Author,books[y].Author);
     strcpy(foundbks[x].Book_Title,books[y].Book_Title);
     strcpy(foundbks[x].category,books[y].category);
@@ -590,7 +644,9 @@ void book_struct_copy(int x,int y){
     foundbks[x].number_of_copies=books[y].number_of_copies;
     strcpy(foundbks[x].publisher,books[y].publisher);
     foundbks[x].borrows=books[y].borrows;
-
+    done=1;
+    }
+    return done;
 
 }
 void display_found(int n){
@@ -647,6 +703,35 @@ int check_ID(char ID[])
         return i;
     }
     return -1;
+}
+int word_validation(char word[])
+{
+    int i,valid=1;
+    char c;
+    for(i=0;i<strlen(word)-1;i++)
+    {
+        c=word[i];
+        if(isdigit(c)!=0){
+            valid=0;
+            printf("A word can't contain numbers!!\n");
+    }
+    return valid;
+}
+}
+int email_validation(char email[])
+{
+    int i,valid=1;
+    int len=strlen(email);
+    for(i=0;i<strlen-1;i++)
+    {
+        if(email[i]!='@')
+            valid=0;
+    }
+    if(email[len-1]!='m' || email[len-2]!='o' || email[len-3]!='c' || email[len-4]!='.')
+        valid=0;
+    if(valid==0){
+        printf("Please enter a correct em-mail format!!\n");
+        return-1;}
 }
 void phone_validation(char phone[])
 { int i=0;
@@ -786,15 +871,20 @@ void register_(){
     strcpy(members[n].member_address.building,building);
     printf("\nstreet: ");getchar();
     scanf("%[^\n]",members[n].member_address.street);
+    do{
     printf("\ncity: ");getchar();
     scanf("%[^\n]",members[n].member_address.city);
+    }while(word_validation(members[n].member_address.city)!=1);
     printf("Please enter member's phone number: ");
     phone_validation(phone);
     strcpy(members[n].member_Phone_Number, phone );
     printf("Please enter member's age: ");getchar();
     scanf("%[^\n]",&members[n].member_age);
+
+    do{
     printf("Please enter member's e-mail: ");getchar();
     scanf("%[^\n]",members[n].member_Email);
+    }while(email_validation(members[n].member_Email)==-1);
     members[n].borrows=0;
     wait_for_it(2);
 }
@@ -1112,10 +1202,14 @@ void borrow_book(char *ID){
     strcpy(borrows[borrowarraysize].borrowed_ISBN,foundbks[k-1].ISBN);
     strcpy(borrows[borrowarraysize].user_i,ID);
     printf("Please enter Dates as following\n Day/Month/Year");
-    printf("\nDate issued: ");
+    do{printf("\nDate borrowed: ");
       scanf("%d%d%d",&borrows[borrowarraysize].date_borrowed.day,&borrows[borrowarraysize].date_borrowed.month,&borrows[borrowarraysize].date_borrowed.year);
-    printf("\nDate due return: ");
+    }while ((books[bookarraysize].DateOfPuplication.day>31 || books[bookarraysize].DateOfPuplication.day<1)|| (books[bookarraysize].DateOfPuplication.month>12 || books[bookarraysize].DateOfPuplication.month<1)
+          || (books[bookarraysize].DateOfPuplication.year>2018 || books[bookarraysize].DateOfPuplication.year < 1600));
+    do{printf("\nDate due return: ");
       scanf("%d%d%d",&borrows[borrowarraysize].date_due_to_return.day,&borrows[borrowarraysize].date_due_to_return.month,&borrows[borrowarraysize].date_due_to_return.year);
+    }while ((books[bookarraysize].DateOfPuplication.day>31 || books[bookarraysize].DateOfPuplication.day<1)|| (books[bookarraysize].DateOfPuplication.month>12 || books[bookarraysize].DateOfPuplication.month<1)
+          || (books[bookarraysize].DateOfPuplication.year>2018 || books[bookarraysize].DateOfPuplication.year < 1600));
     borrows[borrowarraysize].date_returned.day=0;
     borrows[borrowarraysize].date_returned.month=0;
     borrows[borrowarraysize].date_returned.year=0;
@@ -1312,7 +1406,7 @@ void main_menu(int way){
     printf("=============== Welcome to Library System ========================\n");
     red();
     background();
-  if(way==2){
+    if(way==2){
     most_popular_books(1);}
     //goto(10,10);
     printf("\n\n^^^^System Management^^^^\n");
